@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const routeLendings = require('./routes/lendings');
+const routeBikes = require('./routes/bikes');
 
 const app = express();
 const PREFIX = process.env.API_ROUTE_PREFIX;
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 
 // Define route middleware
 app.use(`${PREFIX}/lendings`, routeLendings);
+app.use(`${PREFIX}/bikes`, routeBikes);
 
 // Throw a new error when the route is not found
 app.use((req, res, next) => {

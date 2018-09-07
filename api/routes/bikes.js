@@ -41,8 +41,8 @@ router.get('/:bikeId', (req, res, _) => {
 router.post('/', (req, res, _) => {
   const bike = new Bike({
     _id: new mongoose.Types.ObjectId(),
-    lender: req.body.lender,
     bikeId: req.body.bikeId,
+    name: req.body.name,
   });
   bike.save()
     .then((result) => {

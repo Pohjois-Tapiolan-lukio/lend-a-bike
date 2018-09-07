@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 
 const styles = {
-  flex: {
+  titlebar: {
     flexGrow: 1,
   },
 }
@@ -19,7 +19,7 @@ export default class Titlebar extends Component {
           <Typography
             variant='headline'
             color='inherit'
-            style={styles.flex}
+            style={styles.titlebar}
           >
             Lend-a-Bike
           </Typography>

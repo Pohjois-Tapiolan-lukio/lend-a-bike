@@ -4,3 +4,4 @@ node_modules/
 data/
 .tern-port
 .log
+package-lock.json

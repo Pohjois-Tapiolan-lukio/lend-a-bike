@@ -3,6 +3,7 @@ import {
   Typography,
   Button,
   Grid,
+  GridList,
   Card,
   CardContent,
   CardActions,
@@ -10,22 +11,29 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { DirectionsBike } from '@material-ui/icons';
 
+import SubmitBike from './SubmitBike';
+
 const styles = theme => ({
   flex: {
     flexGrow: 1,
   },
-  fab: {
-    position: 'absolute',
+  fabs: {
     bottom: theme.spacing.unit * 2,
     right: theme.spacing.unit * 2,
+    position: 'fixed',
+  },
+  fab: {
+    marginLeft: theme.spacing.unit,
+    background: 'linear-gradient(45deg, #c51162 30%, #f4701d 90%)',
+    color: 'white',
   },
   extendedIcon: {
     marginRight: theme.spacing.unit,
   },
   cardgrid: {
-    marginBottom: 2,
-  },
-  card: {
+    marginTop: theme.spacing.unit,
+    mxaHeight: '100vh',
+    overflow: 'auto',
   },
 });
 
@@ -44,10 +52,8 @@ class Lend extends Component {
         'Content-Type': 'application/json'
       },
     })
-      .then(result => { console.log(result); return result })
       .then(result => result.json())
       .then(result => {
-        console.log(result);
         this.setState({
           bikes: result,
         });
@@ -61,46 +67,48 @@ class Lend extends Component {
     const { classes } = this.props;
     return (
       <div>
-        <Grid
-          container
-          spacing={16}
+        <GridList
           className={classes.cardgrid}
+          cols={2}
         >
           {this.state.bikes.map(bike =>
             <Grid item xs={12} sm={6}>
               <Card className={classes.card}>
                 <CardContent>
-                  <Typography color="textSecondary">
+                  <Typography color='textSecondary'>
                     Bike of the Day
                   </Typography>
-                  <Typography variant="headline" component="h2">
+                  <Typography variant='headline' component="h2">
                     {bike.name}
                   </Typography>
-                  <Typography color="textSecondary">
+                  <Typography color='textSecondary'>
                     noun
                   </Typography>
-                  <Typography component="p">
+                  <Typography component='p'>
                     {`${bike.name}'s id is ${bike.bikeId}`}
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small">Learn More</Button>
+                  <Button size='small'>Learn More</Button>
                 </CardActions>
               </Card>
             </Grid>
           )}
-        </Grid>
-        <Button
-          variant="extendedFab"
-          color='secondary'
-          aria-label="Delete"
-          className={classes.fab}
+        </GridList>
+        <div
+          className={classes.fabs}
         >
-          <DirectionsBike
-            className={classes.extendedIcon}
-          />
-          Lainaa
-        </Button>
+          <SubmitBike />
+          <Button
+            className={classes.fab}
+            variant='extendedFab'
+          >
+            <DirectionsBike
+              className={classes.extendedIcon}
+            />
+            Lainaa
+          </Button>
+        </div>
       </div>
     );
   }

@@ -19,24 +19,17 @@ class Titlebar extends Component {
 
   render() {
     return (
-      <Measure
-        bounds
-        onResize={this.props.handleResize}
-      >
-        {({ measureRef }) =>
-          <AppBar positionAbsolute>
-            <Toolbar>
-              <Typography
-                variant='headline'
-                color='inherit'
-                style={styles.titlebar}
-              >
-                Lend-a-Bike
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        }
-      </Measure>
+      <AppBar positionAbsolute>
+        <Toolbar>
+          <Typography
+            variant='headline'
+            color='inherit'
+            style={styles.titlebar}
+          >
+            Lend-a-Bike
+          </Typography>
+        </Toolbar>
+      </AppBar>
     );
   }
 }

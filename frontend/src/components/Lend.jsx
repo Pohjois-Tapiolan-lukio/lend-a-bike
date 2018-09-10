@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Typography,
   Button,
@@ -31,9 +31,7 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
   },
   cardgrid: {
-    marginTop: theme.spacing.unit,
-    mxaHeight: '100vh',
-    overflow: 'auto',
+    marginTop: 64,
   },
 });
 
@@ -66,10 +64,11 @@ class Lend extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <div>
-        <GridList
+      <Fragment>
+        <Grid
+          container
           className={classes.cardgrid}
-          cols={2}
+          spacing={8}
         >
           {this.state.bikes.map(bike =>
             <Grid item xs={12} sm={6}>
@@ -94,7 +93,7 @@ class Lend extends Component {
               </Card>
             </Grid>
           )}
-        </GridList>
+        </Grid>
         <div
           className={classes.fabs}
         >
@@ -109,7 +108,7 @@ class Lend extends Component {
             Lainaa
           </Button>
         </div>
-      </div>
+      </Fragment>
     );
   }
 }

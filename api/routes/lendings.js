@@ -9,15 +9,13 @@ const router = express.Router();
 router.get('/', (req, res, _) => {
   Lending.find()
     .select('_id lender bikeId time')
-    .then((lendings) => {
-      res.status(200)
-        .json(lendings);
+    .then(lendings => {
+      res.status(200).json(lendings);
     })
-    .catch((error) => {
-      res.status(500)
-        .json({
-          error,
-        });
+    .catch(error => {
+      res.status(500).json({
+        error,
+      });
     });
 });
 
@@ -26,32 +24,31 @@ router.get('/:lendingId', (req, res, _) => {
     _id: req.params.lendingId,
   })
     .select('_id lender bikeId time')
-    .then((lending) => {
-      res.status(200)
-        .json(lending);
+    .then(lending => {
+      res.status(200).json(lending);
     })
-    .catch((error) => {
-      res.status(500)
-        .json({
-          error,
-        });
+    .catch(error => {
+      res.status(500).json({
+        error,
+      });
     });
 });
 
 router.post('/', (req, res, _) => {
   Lending.find()
-    .then((lendings) => {
-
+    .then(lendings => {
       if (req.body.bikeId === undefined) {
         return res.status(400).json({
-          message: 'Where\'s my bikeId!'
+          message: "Where's my bikeId!",
         });
       }
 
-      const lendingsInUse = lendings.filter((lending) => {
+      const lendingsInUse = lendings.filter(lending => {
         if (lending.bikeId === new String(req.body.bikeId).valueOf()) {
           // Epoch 0 means that the bike is in use
-          if (new Date(lending.time.returned).getTime() === new Date(0).getTime()) {
+          if (
+            new Date(lending.time.returned).getTime() === new Date(0).getTime()
+          ) {
             // Gets trapped in the filter
             return true;
           }
@@ -71,24 +68,25 @@ router.post('/', (req, res, _) => {
         lender: req.body.lender,
         bikeId: req.body.bikeId,
       });
-      lending.save()
-        .then((result) => {
-          res.status(200)
-            .json({
-              ...result,
-              message: 'Lending successful',
-            });
+      lending
+        .save()
+        .then(result => {
+          res.status(200).json({
+            ...result,
+            message: 'Lending successful',
+          });
         })
-        .catch((error) => {
-          res.status(500)
-            .json({
-              ...error,
-              message: 'Lending failed!',
-            });
+        .catch(error => {
+          res.status(400).json({
+            ...error,
+            message: 'Lending failed!',
+          });
         });
     })
-    .catch((error) => {
-
+    .catch(error => {
+      res.status(500).json({
+        error,
+      });
     });
 });
 
@@ -96,23 +94,21 @@ router.patch('/:lendingId', (req, res, _) => {
   Lending.findOne({
     _id: req.params.lendingId,
   })
-    .then((lending) => {
+    .then(lending => {
       Lending.update(lending, req.body)
-        .then((result) => {
-          res.status(200)
-            .json(result);
+        .then(result => {
+          res.status(200).json(result);
         })
-        .catch((error) => {
+        .catch(error => {
           res.status(500).json({
             error,
           });
         });
     })
-    .catch((error) => {
-      res.status(400)
-        .json({
-          message: error,
-        });
+    .catch(error => {
+      res.status(400).json({
+        message: error,
+      });
     });
 });
 

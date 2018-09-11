@@ -26,7 +26,7 @@ const styles = theme => ({
   pos: {
     marginBottom: 12,
   },
-})
+});
 
 class Memos extends Component {
   constructor(props) {
@@ -42,8 +42,8 @@ class Memos extends Component {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then(res => res.json())
       .then(memos => {
@@ -60,18 +60,16 @@ class Memos extends Component {
     const bull = <span className={classes.bullet}>•</span>;
     return (
       <div>
-        {this.state.memos.map((memo, index) =>
+        {this.state.memos.map((memo, index) => (
           <Card className={classes.card}>
             <CardContent>
-              <Typography variant='headline'>
-                {memo.text}
-              </Typography>
+              <Typography variant="headline">{memo.text}</Typography>
             </CardContent>
             <CardActions>
-              <Button size='small'>Learn More</Button>
+              <Button size="small">Learn More</Button>
             </CardActions>
           </Card>
-        )}
+        ))}
       </div>
     );
   }

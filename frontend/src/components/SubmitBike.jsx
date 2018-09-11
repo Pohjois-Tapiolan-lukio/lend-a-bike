@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {
-  Typography,
+  //Typography,
   Button,
   Dialog,
   DialogActions,
@@ -24,7 +24,7 @@ const styles = theme => ({
   },
   textField: {
     marginTop: theme.spacing.unit,
-  }
+  },
 });
 
 class SubmitBike extends Component {
@@ -42,18 +42,18 @@ class SubmitBike extends Component {
     this.setState({
       open: false,
     });
-  }
+  };
   openDialog = () => {
     this.setState({
       open: true,
     });
-  }
+  };
 
   handleChange = key => event => {
     this.setState({
       [key]: event.target.value,
     });
-  }
+  };
 
   submitBike = () => {
     this.setState({
@@ -63,7 +63,7 @@ class SubmitBike extends Component {
     fetch('/api/bikes', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         name: this.state.name,
@@ -86,7 +86,7 @@ class SubmitBike extends Component {
     this.setState({
       disableSubmit: false,
     });
-  }
+  };
 
   render() {
     const { classes } = this.props;
@@ -94,12 +94,10 @@ class SubmitBike extends Component {
       <Fragment>
         <Button
           className={classes.fab}
-          variant='extendedFab'
+          variant="extendedFab"
           onClick={this.openDialog}
         >
-          <Add
-            className={classes.extendedIcon}
-          />
+          <Add className={classes.extendedIcon} />
           Lisää
         </Button>
         <Dialog
@@ -108,9 +106,7 @@ class SubmitBike extends Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            Lisää uusi pyörä
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">Lisää uusi pyörä</DialogTitle>
           <DialogContent>
             <Grid container>
               <DialogContentText id="alert-dialog-description">
@@ -122,8 +118,8 @@ class SubmitBike extends Component {
                   fullWidth
                   autoFocus
                   className={classes.textField}
-                  id='name'
-                  placeholder='Pyörän nimi'
+                  id="name"
+                  placeholder="Pyörän nimi"
                   value={this.state.name}
                   onChange={this.handleChange('name')}
                 />
@@ -133,8 +129,8 @@ class SubmitBike extends Component {
                   required
                   fullWidth
                   className={classes.textField}
-                  id='bikeId'
-                  placeholder='Pyörän ID'
+                  id="bikeId"
+                  placeholder="Pyörän ID"
                   value={this.state.bikeId}
                   onChange={this.handleChange('bikeId')}
                 />
@@ -144,7 +140,7 @@ class SubmitBike extends Component {
           <DialogActions>
             <Button
               onClick={this.closeDialog}
-              variant='contained'
+              variant="contained"
               color="secondary"
             >
               Kumoa

@@ -50,21 +50,19 @@ class Login extends Component {
     this.setState({
       [key]: event.target.value,
     });
-  }
+  };
 
   handleClose = event => {
     this.setState({
       snackOpen: false,
     });
-  }
+  };
 
   renderRedirect = () => {
     if (this.state.redirectHome) {
-      return (
-        <Redirect to='/' />
-      );
+      return <Redirect to="/" />;
     }
-  }
+  };
 
   handleSubmit = component => {
     this.setState({
@@ -78,7 +76,7 @@ class Login extends Component {
         password: this.state.password,
       }),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
     })
       .then(res => res.json())
@@ -102,104 +100,96 @@ class Login extends Component {
         console.error(err);
         this.setState({
           disableSubmit: false,
-        })
+        });
       });
-  }
+  };
 
   render() {
     const { classes } = this.props;
     return (
-      <Grid
-        container
-        direction='row'
-        justify='center'
-      >
+      <Grid container direction="row" justify="center">
         <Grid item xs={12} sm={8}>
-        <Paper className={`${classes.root} ${classes.center}`}>
-          <Grid
-            container
-            direction='row'
-            justify='center'
-            alignItems='flex-start'
-          >
-            <Grid item xs={12}>
-              <TextField
-                id='email'
-                label='Email'
-                value={this.state.name}
-                onChange={this.handleChange('email')}
-                margin='normal'
-                fullWidth
-              />
+          <Paper className={`${classes.root} ${classes.center}`}>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="flex-start"
+            >
+              <Grid item xs={12}>
+                <TextField
+                  id="email"
+                  label="Email"
+                  value={this.state.name}
+                  onChange={this.handleChange('email')}
+                  margin="normal"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="password"
+                  label="Password"
+                  type="password"
+                  value={this.state.password}
+                  onChange={this.handleChange('password')}
+                  margin="normal"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={this.handleSubmit}
+                  className={classes.Button}
+                  disabled={this.state.disableSubmit}
+                >
+                  Submit
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id='password'
-                label='Password'
-                type='password'
-                value={this.state.password}
-                onChange={this.handleChange('password')}
-                margin='normal'
-                fullWidth
-              />
-            </Grid>
-            <Grid item>
-              <Button
-                color='secondary'
-                variant='contained'
-                onClick={this.handleSubmit}
-                className={classes.Button}
-                disabled={this.state.disableSubmit}
-              >
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
 
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
-            }}
-            open={this.state.snackOpen}
-            autoHideDuration={6000}
-            onClose={this.handleClose}
-            ContentProps={{
-              'aria-describedby': 'message-id',
-            }}
-            message={
-              <span id="message-id">
-                You are signed in
-              </span>
-            }
-            action={[
-              <Button
-                key="undo"
-                color="secondary"
-                size="small"
-                onClick={() => this.setState({ redirectHome: true })}>
-                HOME
-              </Button>,
-              <IconButton
-                key="close"
-                aria-label="Close"
-                color="inherit"
-                className={classes.close}
-                onClick={this.handleClose}
-              >
-                <Close />
-              </IconButton>,
-            ]}
-          />
+            <Snackbar
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              open={this.state.snackOpen}
+              autoHideDuration={6000}
+              onClose={this.handleClose}
+              ContentProps={{
+                'aria-describedby': 'message-id',
+              }}
+              message={<span id="message-id">You are signed in</span>}
+              action={[
+                <Button
+                  key="undo"
+                  color="secondary"
+                  size="small"
+                  onClick={() => this.setState({ redirectHome: true })}
+                >
+                  HOME
+                </Button>,
+                <IconButton
+                  key="close"
+                  aria-label="Close"
+                  color="inherit"
+                  className={classes.close}
+                  onClick={this.handleClose}
+                >
+                  <Close />
+                </IconButton>,
+              ]}
+            />
 
-          {this.renderRedirect()}
-        </Paper>
+            {this.renderRedirect()}
+          </Paper>
         </Grid>
       </Grid>
     );
   }
 }
-
 
 export default withStyles(styles)(Login);
 

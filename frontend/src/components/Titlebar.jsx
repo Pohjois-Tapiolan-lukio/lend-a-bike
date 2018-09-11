@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
-import Measure, { withContentRect } from 'react-measure';
+import { AppBar, Toolbar, Typography } from '@material-ui/core';
 
 const styles = {
   titlebar: {
     flexGrow: 1,
   },
-}
+};
 
 class Titlebar extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
-      <AppBar positionAbsolute>
+      <AppBar position='fixed'>
         <Toolbar>
           <Typography
-            variant='headline'
-            color='inherit'
+            variant="headline"
+            color="inherit"
             style={styles.titlebar}
           >
             Lend-a-Bike

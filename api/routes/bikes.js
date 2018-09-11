@@ -38,7 +38,7 @@ router.get('/:bikeId', (req, res, _) => {
     });
 });
 
-router.post('/', (req, res, _) => {
+router.post('/', auth, (req, res, _) => {
   const bike = new Bike({
     _id: new mongoose.Types.ObjectId(),
     bikeId: req.body.bikeId,
@@ -57,7 +57,7 @@ router.post('/', (req, res, _) => {
     });
 });
 
-router.patch('/:bikeId', (req, res, _) => {
+router.patch('/:bikeId', auth, (req, res, _) => {
   Bike.findOne({
     _id: req.params.bikeId,
   })

@@ -11,7 +11,7 @@ router.get('/', (req, res, _) => {
     .select('_id name bikeId usage')
     .then((bikes) => {
       res.status(200)
-        .json(bikes);
+        .json(bikes)
     })
     .catch((error) => {
       res.status(500)
@@ -38,11 +38,11 @@ router.get('/:bikeId', (req, res, _) => {
     });
 });
 
-router.post('/', auth, (req, res, _) => {
+router.post('/', (req, res, _) => {
   const bike = new Bike({
     _id: new mongoose.Types.ObjectId(),
-    bikeId: req.body.bikeId,
     name: req.body.name,
+    bikeId: req.body.bikeId,
   });
   bike.save()
     .then((result) => {

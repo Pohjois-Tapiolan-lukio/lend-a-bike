@@ -39,7 +39,8 @@ class Lend extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bikes: []
+      bikes: [],
+      selectedBike: '',
     };
   }
 
@@ -60,6 +61,11 @@ class Lend extends Component {
         console.log(error);
       });
   }
+  handleSelect = bikeId => () => {
+    this.setState({
+      selectedBike: bikeId,
+    });
+  }
 
   render() {
     const { classes } = this.props;
@@ -72,7 +78,11 @@ class Lend extends Component {
         >
           {this.state.bikes.map(bike =>
             <Grid item xs={12} sm={6}>
-              <Card className={classes.card}>
+              <Card
+                className={classes.card}
+                onClick={this.handleSelect(bike.bikeId)}
+                raised={this.state.selectedBike === bike.bikeId}
+              >
                 <CardContent>
                   <Typography color='textSecondary'>
                     Bike of the Day
@@ -101,6 +111,7 @@ class Lend extends Component {
           <Button
             className={classes.fab}
             variant='extendedFab'
+            disabled={this.state.selectedBike === ''}
           >
             <DirectionsBike
               className={classes.extendedIcon}

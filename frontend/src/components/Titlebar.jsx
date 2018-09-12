@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 
+import Admin from './Admin';
+
 const styles = {
   titlebar: {
     flexGrow: 1,
   },
 };
 
-class Titlebar extends Component {
-  render() {
-    return (
-      <AppBar position='fixed'>
-        <Toolbar>
-          <Typography
-            variant="headline"
-            color="inherit"
-            style={styles.titlebar}
-          >
-            Lend-a-Bike
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    );
-  }
-}
+const Titlebar = () => (
+  <AppBar position="fixed">
+    <Toolbar>
+      <Typography variant="headline" color="inherit" style={styles.titlebar}>
+        Lend-a-Bike
+      </Typography>
+      <Admin />
+    </Toolbar>
+  </AppBar>
+);
 
 //export default withContentRect('bounds')(measure =>
 //  <Titlebar

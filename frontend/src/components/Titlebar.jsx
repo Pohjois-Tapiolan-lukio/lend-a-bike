@@ -9,13 +9,13 @@ const styles = {
   },
 };
 
-const Titlebar = () => (
+const Titlebar = props => (
   <AppBar position="fixed">
     <Toolbar>
       <Typography variant="headline" color="inherit" style={styles.titlebar}>
         Lend-a-Bike
       </Typography>
-      <Admin />
+      <Admin setToken={props.setToken}/>
     </Toolbar>
   </AppBar>
 );

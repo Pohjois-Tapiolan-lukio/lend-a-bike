@@ -45,7 +45,6 @@ class Admin extends Component {
       password: '',
       disableSubmit: false,
       open: false,
-      token: '',
     };
   }
   handleChange = key => event => {
@@ -84,12 +83,20 @@ class Admin extends Component {
       },
     })
       .then(result => {
-        console.log(result);
-        return result.json();
-      })
-      .then(result => {
-        this.setState({
-          token: result.token,
+        result.json().then(data => {
+          if (result.status === 200) {
+            this.props.setToken(data.token);
+            this.setState({
+              name: '',
+              password: '',
+              open: false,
+              disableSubmit: false,
+            });
+          } else {
+            this.setState({
+              disableSubmit: false,
+            });
+          }
         });
       })
       .catch(err => {
@@ -137,7 +144,7 @@ class Admin extends Component {
                 <TextField
                   required
                   fullWidth
-                  type='password'
+                  type="password"
                   className={classes.textField}
                   id="password"
                   placeholder="Salasana"
@@ -160,7 +167,7 @@ class Admin extends Component {
               color="primary"
               disabled={this.state.disableSubmit}
             >
-              Lisää
+              Kirjaudu
             </Button>
           </DialogActions>
         </Dialog>

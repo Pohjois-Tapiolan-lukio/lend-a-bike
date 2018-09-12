@@ -4,10 +4,18 @@ import Titlebar from './Titlebar';
 import Lend from './Lend';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      token: '',
+    };
+  }
+
+  setToken = token => this.setState({ token });
   render() {
     return (
       <div>
-        <Titlebar />
+        <Titlebar setToken={this.setToken} />
         <Lend />
       </div>
     );

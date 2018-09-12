@@ -38,22 +38,9 @@ class SubmitBike extends Component {
     };
   }
 
-  closeDialog = () => {
-    this.setState({
-      open: false,
-    });
-  };
-  openDialog = () => {
-    this.setState({
-      open: true,
-    });
-  };
-
-  handleChange = key => event => {
-    this.setState({
-      [key]: event.target.value,
-    });
-  };
+  closeDialog = () => this.setState({ open: false });
+  openDialog = () => this.setState({ open: true });
+  handleChange = key => event => this.setState({ [key]: event.target.value });
 
   submitBike = () => {
     this.setState({
@@ -70,22 +57,23 @@ class SubmitBike extends Component {
         bikeId: this.state.bikeId,
       }),
     })
-      .then(result => result.json())
-      .then(data => {
-        console.log(data);
-        if (!data.error) {
-          this.setState({
-            name: '',
-            bikeId: '',
-            open: false,
-          });
-        }
+      .then(result => {
+        result.json().then(data => {
+          if (result.status === 200) {
+            this.setState({
+              name: '',
+              bikeId: '',
+              open: false,
+              disableSubmit: false,
+            });
+          } else {
+            this.setState({
+              disableSubmit: false,
+            });
+          }
+        });
       })
       .catch(console.error);
-
-    this.setState({
-      disableSubmit: false,
-    });
   };
 
   render() {

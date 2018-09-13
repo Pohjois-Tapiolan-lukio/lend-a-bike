@@ -7,12 +7,26 @@ const auth = require('../auth');
 const router = express.Router();
 
 router.get('/', (req, res, _) => {
+  console.log(req.query);
   Lending.find()
     .select('_id lender bikeId time')
     .then(lendings => {
-      res.status(200).json(lendings);
+      let body = lendings;
+      if (req.query.filter === 'unreturned') {
+        body = lendings.filter(
+          lending =>
+            new Date(lending.time.returned).getTime() === new Date(0).getTime(),
+        );
+      } else if (req.query.filter === 'returned') {
+        body = lendings.filter(
+          lending =>
+            new Date(lending.time.returned).getTime() !== new Date(0).getTime(),
+        );
+      }
+      res.status(200).json(body);
     })
     .catch(error => {
+      console.log(error);
       res.status(500).json({
         error,
       });

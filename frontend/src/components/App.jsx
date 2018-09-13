@@ -16,7 +16,7 @@ class App extends Component {
     return (
       <div>
         <Titlebar setToken={this.setToken} />
-        <Lend />
+        <Lend adminToken={this.state.token}/>
       </div>
     );
   }

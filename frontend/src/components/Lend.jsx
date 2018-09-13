@@ -5,7 +5,7 @@ import {
   Grid,
   Card,
   CardContent,
-  //CardActions,
+  CardActions,
   ButtonBase,
   Dialog,
   DialogActions,
@@ -13,9 +13,15 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { DirectionsBike } from '@material-ui/icons';
+import { DirectionsBike, Delete, Edit, ViewList } from '@material-ui/icons';
+import red from '@material-ui/core/colors/red';
 
 import SubmitBike from './SubmitBike';
 
@@ -50,6 +56,9 @@ const styles = theme => {
       width: '100%',
       height: '100%',
     },
+    deleteConfirm: {
+      color: red[400],
+    },
   };
 };
 
@@ -58,14 +67,21 @@ class Lend extends Component {
     super(props);
     this.state = {
       bikes: [],
+      lendings: [],
       selectedBike: '',
       lender: '',
       disableSubmit: false,
+      // TODO Dialogs in separate components
       dialogOpen: false,
       submitStatus: 0,
+      lendingListOpen: false,
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
+    this.reloadBikes();
+    this.reloadLendings();
+  };
+  reloadBikes = () => {
     fetch('/api/bikes', {
       method: 'GET',
       headers: {
@@ -81,7 +97,23 @@ class Lend extends Component {
       .catch(error => {
         console.log(error);
       });
-  }
+  };
+  // TODO Could be stateless
+  reloadLendings = () => {
+    fetch('/api/lendings?filter=unreturned', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(result => result.json())
+      .then(result => {
+        this.setState({
+          lendings: result,
+        });
+      })
+      .catch(error => console.log);
+  };
   handleSelect = bikeId => () => {
     this.setState({
       selectedBike: this.state.selectedBike === bikeId ? '' : bikeId,
@@ -112,6 +144,7 @@ class Lend extends Component {
             selectedBike: '',
             submitStatus: result.status.toString(),
           });
+          this.reloadLendings();
           setTimeout(this.closeDialog, 800);
         } else {
           this.setState({
@@ -124,15 +157,36 @@ class Lend extends Component {
         console.log(error);
       });
   };
-  openDialog = () => {
+  openDialog = () =>
     this.setState({
       dialogOpen: true,
     });
-  };
-  closeDialog = () => {
+  closeDialog = () =>
     this.setState({
       dialogOpen: false,
     });
+  openLendingList = () =>
+    this.setState({
+      lendingListOpen: true,
+    });
+  closeLendingList = () =>
+    this.setState({
+      lendingListOpen: false,
+    });
+  removeBike = _id => () => {
+    fetch(`/api/bikes/${_id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `bearer ${this.props.adminToken}`,
+      },
+    })
+      .then(result => {
+        this.reloadBikes();
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   render() {
@@ -140,36 +194,91 @@ class Lend extends Component {
     return (
       <Fragment>
         <Grid container className={classes.cardgrid} spacing={8}>
-          {this.state.bikes.map(bike => (
-            <Grid item xs={12} sm={6} key={bike._id}>
-              <Card
-                className={classes.card}
-                onClick={this.handleSelect(bike.bikeId)}
-                raised={this.state.selectedBike === bike.bikeId}
-              >
-                <ButtonBase
-                  className={classes.cardAction}
-                  onClick={this.handleSelect(bike.bikeId)}
+          {this.state.bikes.map(bike => {
+            const bikeInUse = this.state.lendings.filter(
+              lending => lending.bikeId === bike.bikeId
+            );
+
+            return (
+              <Grid item xs={12} sm={6} key={bike._id}>
+                <Card
+                  className={classes.card}
+                  raised={this.state.selectedBike === bike.bikeId}
                 >
-                  <CardContent>
-                    <Typography color="textSecondary">
-                      Bike of the Day
-                    </Typography>
-                    <Typography variant="headline" component="h2">
-                      {bike.name}
-                    </Typography>
-                    <Typography color="textSecondary">noun</Typography>
-                    <Typography component="p">
-                      {`${bike.name}'s id is ${bike.bikeId}`}
-                    </Typography>
-                  </CardContent>
-                </ButtonBase>
-              </Card>
-            </Grid>
-          ))}
+                  <ButtonBase
+                    className={classes.cardAction}
+                    onClick={this.handleSelect(bike.bikeId)}
+                  >
+                    <CardContent>
+                      <Typography variant="headline" component="h2">
+                        {bike.name}
+                      </Typography>
+                      <Typography color="textPrimary">
+                        {bikeInUse.length > 0
+                          ? `Pyörää käyttää ${bikeInUse[0].lender}`
+                          : 'Pyörä ei ole käytössä'}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        {`ID: ${bike.bikeId}`}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        {`_id: ${bike._id}`}
+                      </Typography>
+                    </CardContent>
+                  </ButtonBase>
+                  {this.props.adminToken ? (
+                    <Fragment>
+                      <CardActions>
+                        <Fragment>
+                          <Button onClick={this.removeBike(bike._id)}>
+                            <Delete />
+                          </Button>
+                          <Button>
+                            <Edit />
+                          </Button>
+                          <Button onClick={this.openLendingList}>
+                            <ViewList />
+                          </Button>
+                        </Fragment>
+                      </CardActions>
+
+                      <Dialog
+                        open={this.state.lendingListOpen}
+                        onClose={this.closeLendingList}
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          Pyörän lainaukset
+                        </DialogTitle>
+                        <DialogContent>
+                          <List>
+                            <ListItem>
+                              <ListItemText
+                                primary="Single-line item"
+                                secondary="Secondary text"
+                              />
+                              <ListItemSecondaryAction>
+                                <IconButton aria-label="Delete">
+                                  <Delete />
+                                </IconButton>
+                              </ListItemSecondaryAction>
+                            </ListItem>
+                          </List>
+                        </DialogContent>
+                      </Dialog>
+                    </Fragment>
+                  ) : (
+                    ''
+                  )}
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
         <div className={classes.fabs}>
-          <SubmitBike />
+          <SubmitBike
+            reloadBikes={this.reloadBikes}
+            adminToken={this.props.adminToken}
+          />
           <LendBike
             selectedBike={this.state.selectedBike}
             handleChange={this.handleChange}
@@ -213,7 +322,7 @@ const LendBike = withStyles(styles)(props => (
             {
               {
                 '200': 'Lainaus luotu',
-                '400': 'Lainaus epäonnistui (400)',
+                '403': 'Ei oikeutta (403)',
                 '409': 'Pyörä on käytössä (409)',
               }[props.submitStatus]
             }

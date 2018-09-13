@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     req.tokenData = tokenData;
     return next();
   } catch (error) {
-    return res.status(400)
+    return res.status(403)
       .json({
         message: 'Token unauthorized',
       });

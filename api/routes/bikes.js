@@ -9,15 +9,13 @@ const router = express.Router();
 router.get('/', (req, res, _) => {
   Bike.find()
     .select('_id name bikeId usage')
-    .then((bikes) => {
-      res.status(200)
-        .json(bikes)
+    .then(bikes => {
+      res.status(200).json(bikes);
     })
-    .catch((error) => {
-      res.status(500)
-        .json({
-          error,
-        });
+    .catch(error => {
+      res.status(500).json({
+        error,
+      });
     });
 });
 
@@ -26,34 +24,31 @@ router.get('/:bikeId', (req, res, _) => {
     _id: req.params.bikeId,
   })
     .select('_id name bikeId usage')
-    .then((bike) => {
-      res.status(200)
-        .json(bike);
+    .then(bike => {
+      res.status(200).json(bike);
     })
-    .catch((error) => {
-      res.status(500)
-        .json({
-          error,
-        });
+    .catch(error => {
+      res.status(500).json({
+        error,
+      });
     });
 });
 
-router.post('/', (req, res, _) => {
+router.post('/', auth, (req, res, _) => {
   const bike = new Bike({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     bikeId: req.body.bikeId,
   });
-  bike.save()
-    .then((result) => {
-      res.status(200)
-        .json(result);
+  bike
+    .save()
+    .then(result => {
+      res.status(200).json(result);
     })
-    .catch((error) => {
-      res.status(500)
-        .json({
-          error,
-        });
+    .catch(error => {
+      res.status(500).json({
+        error,
+      });
     });
 });
 
@@ -61,23 +56,39 @@ router.patch('/:bikeId', auth, (req, res, _) => {
   Bike.findOne({
     _id: req.params.bikeId,
   })
-    .then((bike) => {
+    .then(bike => {
       Bike.update(bike, req.body)
-        .then((result) => {
-          res.status(200)
-            .json(result);
+        .then(result => {
+          res.status(200).json(result);
         })
-        .catch((error) => {
+        .catch(error => {
           res.status(500).json({
             error,
           });
         });
     })
-    .catch((error) => {
-      res.status(400)
-        .json({
-          message: error,
-        });
+    .catch(error => {
+      res.status(400).json({
+        message: error,
+      });
+    });
+});
+
+router.delete('/:bikeId', auth, (req, res, _) => {
+  Bike.findOne({
+    _id: req.params.bikeId,
+  })
+    .remove()
+    .then(result => {
+      res.status(200).json({
+        result,
+        message: 'Bike removed!',
+      });
+    })
+    .catch(error => {
+      res.status(400).json({
+        message: error,
+      });
     });
 });
 

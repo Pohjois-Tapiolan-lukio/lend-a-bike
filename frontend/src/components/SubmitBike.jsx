@@ -33,6 +33,7 @@ class SubmitBike extends Component {
     this.state = {
       open: false,
       disableSubmit: false,
+      submitStatus: '',
       name: '',
       bikeId: '',
     };
@@ -47,10 +48,14 @@ class SubmitBike extends Component {
       disableSubmit: true,
     });
 
+    const Authorization = this.props.adminToken
+      ? `Bearer ${this.props.adminToken}`
+      : undefined;
     fetch('/api/bikes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization,
       },
       body: JSON.stringify({
         name: this.state.name,
@@ -58,20 +63,25 @@ class SubmitBike extends Component {
       }),
     })
       .then(result => {
-        result.json().then(data => {
-          if (result.status === 200) {
-            this.setState({
-              name: '',
-              bikeId: '',
-              open: false,
-              disableSubmit: false,
-            });
-          } else {
-            this.setState({
-              disableSubmit: false,
-            });
-          }
-        });
+        if (result.ok) {
+          result.json().then(data => {
+            if (result.status === 200) {
+              this.setState({
+                name: '',
+                bikeId: '',
+                open: false,
+                disableSubmit: false,
+                submitStatus: result.status.toString(),
+              });
+              this.props.reloadBikes();
+            }
+          });
+        } else {
+          this.setState({
+            disableSubmit: false,
+            submitStatus: result.status.toString(),
+          });
+        }
       })
       .catch(console.error);
   };
@@ -99,6 +109,14 @@ class SubmitBike extends Component {
             <Grid container>
               <DialogContentText id="alert-dialog-description">
                 Kirjoita pyörän tiedot
+                <br />
+                {
+                  {
+                    '201': 'Pyörä luotu',
+                    '403': 'Ei oikeutta (403)',
+                    '409': 'Pyörä on jo lisätty (409)',
+                  }[this.state.submitStatus]
+                }
               </DialogContentText>
               <Grid item xs={12}>
                 <TextField

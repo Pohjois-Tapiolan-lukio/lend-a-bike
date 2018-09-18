@@ -20,10 +20,11 @@ import {
   IconButton,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { DirectionsBike, Delete, Edit, ViewList } from '@material-ui/icons';
+import { DirectionsBike, Delete } from '@material-ui/icons';
 import red from '@material-ui/core/colors/red';
 
 import SubmitBike from './SubmitBike';
+import { BikeCardButtons } from './LendAdmin';
 
 const styles = theme => {
   //console.log(theme);
@@ -173,21 +174,6 @@ class Lend extends Component {
     this.setState({
       lendingListOpen: false,
     });
-  removeBike = _id => () => {
-    fetch(`/api/bikes/${_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `bearer ${this.props.adminToken}`,
-      },
-    })
-      .then(result => {
-        this.reloadBikes();
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
 
   render() {
     const { classes } = this.props;
@@ -229,17 +215,7 @@ class Lend extends Component {
                   {this.props.adminToken ? (
                     <Fragment>
                       <CardActions>
-                        <Fragment>
-                          <Button onClick={this.removeBike(bike._id)}>
-                            <Delete />
-                          </Button>
-                          <Button>
-                            <Edit />
-                          </Button>
-                          <Button onClick={this.openLendingList}>
-                            <ViewList />
-                          </Button>
-                        </Fragment>
+                        <BikeCardButtons />
                       </CardActions>
 
                       <Dialog

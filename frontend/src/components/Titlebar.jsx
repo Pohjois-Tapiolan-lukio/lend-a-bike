@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 
 import Admin from './Admin';
@@ -20,10 +20,6 @@ const Titlebar = props => (
   </AppBar>
 );
 
-//export default withContentRect('bounds')(measure =>
-//  <Titlebar
-//    measure={measure}
-//  />);
 export default Titlebar;
 
 // vim: et ts=2 sw=2 :

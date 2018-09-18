@@ -3,9 +3,6 @@ import {
   Button,
   TextField,
   Grid,
-  Paper,
-  Snackbar,
-  IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,7 +10,6 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Close } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
 
 const styles = theme => ({
@@ -48,19 +44,13 @@ class Admin extends Component {
     };
   }
   handleChange = key => event => {
-    this.setState({
-      [key]: event.target.value,
-    });
+    this.setState({ [key]: event.target.value });
   };
   closeDialog = () => {
-    this.setState({
-      open: false,
-    });
+    this.setState({ open: false });
   };
   openDialog = () => {
-    this.setState({
-      open: true,
-    });
+    this.setState({ open: true });
   };
   renderRedirect = () => {
     if (this.state.redirectHome) {

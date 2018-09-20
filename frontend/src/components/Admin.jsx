@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Redirect } from 'react-router-dom';
+//import { Redirect } from 'react-router-dom';
 
 const styles = theme => ({
   Button: {
@@ -52,11 +52,11 @@ class Admin extends Component {
   openDialog = () => {
     this.setState({ open: true });
   };
-  renderRedirect = () => {
-    if (this.state.redirectHome) {
-      return <Redirect to="/" />;
-    }
-  };
+  //  renderRedirect = () => {
+  //    if (this.state.redirectHome) {
+  //      return <Redirect to="/" />;
+  //    }
+  //  };
   handleSubmit = () => {
     this.setState({
       disableSubmit: true,

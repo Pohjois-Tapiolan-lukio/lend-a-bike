@@ -99,7 +99,7 @@ class Lend extends Component {
         console.log(error);
       });
   };
-  // TODO Could be stateless
+  // TODO Fetch should be static
   reloadLendings = () => {
     fetch('/api/lendings?filter=unreturned', {
       method: 'GET',
@@ -215,7 +215,11 @@ class Lend extends Component {
                   {this.props.adminToken ? (
                     <Fragment>
                       <CardActions>
-                        <BikeCardButtons />
+                        <BikeCardButtons
+                          bike={bike}
+                          onDelete={this.reloadBikes}
+                          adminToken={this.props.adminToken}
+                        />
                       </CardActions>
 
                       <Dialog

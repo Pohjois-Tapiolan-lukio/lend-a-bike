@@ -34,11 +34,14 @@ const styles = theme => ({
   deleteConfirm: {
     color: red[400],
   },
+  delete: {
+    transition: 'color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+  },
 });
 
 export const BikeCardButtons = withStyles(styles)(props => (
   <Fragment>
-    <DeleteButton />
+    <DeleteButton {...props} />
     <Button>
       <Edit />
     </Button>
@@ -48,60 +51,82 @@ export const BikeCardButtons = withStyles(styles)(props => (
   </Fragment>
 ));
 
-class DeleteButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      pressedOnce: false,
-    };
-  }
-  handleClick = () => {
-    if (this.state.pressedOnce) {
-      this.delete();
-      return;
+const DeleteButton = withStyles(styles)(
+  class extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        pressedOnce: false,
+        timeoutId: -1,
+      };
     }
-    this.setState({
-      pressedOnce: true,
-    });
-    setTimeout(
-      () =>
+    static propTypes = {
+      delay: PropTypes.number,
+      bike: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+      }).isRequired,
+      onDelete: PropTypes.func,
+      adminToken: PropTypes.string.isRequired,
+    };
+    static defaultProps = {
+      delay: 2000,
+      onDelete: () => {},
+    };
+    handleClick = () => {
+      if (this.state.pressedOnce) {
+        if (this.state.timeoutId !== -1) {
+          clearTimeout(this.state.timeoutId);
+        }
+        this.delete().then(this.onDelete);
         this.setState({
           pressedOnce: false,
-        }),
-      this.props.delay
-    );
-  };
-  delete = () => {
-    fetch(`/api/bikes/${this.props.bike._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.props.adminToken}`,
-      },
-    })
-      .then(this.props.onDelete())
-      .catch(error => {
-        console.log(error);
+        });
+        return;
+      }
+      this.setState({
+        pressedOnce: true,
       });
-  };
+      if (this.state.timeoutId !== -1) {
+        clearTimeout(this.state.timeoutId);
+      }
+      this.setState({
+        timeoutId: setTimeout(
+          () =>
+            this.setState({
+              pressedOnce: false,
+              timeoutId: -1,
+            }),
+          this.props.delay
+        ),
+      });
+    };
+    delete = () => {
+      return fetch(`/api/bikes/${this.props.bike._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.props.adminToken}`,
+        },
+      })
+        .then(this.props.onDelete())
+        .catch(error => {
+          console.log(error);
+        });
+    };
 
-  render() {
-    return (
-      <Button onClick={this.handleClick}>
-        <Delete />
-      </Button>
-    );
+    render() {
+      const { classes } = this.props;
+      return (
+        <Button onClick={this.handleClick}>
+          {this.state.pressedOnce ? (
+            <Delete className={`${classes.deleteConfirm} ${classes.delete}`} />
+          ) : (
+            <Delete className={`${classes.delete}`} />
+          )}
+        </Button>
+      );
+    }
   }
-}
-
-DeleteButton.propTypes = {
-  delay: PropTypes.number,
-  bike: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    bikeId: PropTypes.string.isRequired,
-    lender: PropTypes.string.isRequired,
-  }).isRequired,
-  onDelete: PropTypes.func,
-};
+);
 
 // vim: et ts=2 sw=2 :

@@ -7,7 +7,7 @@ const bikeSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  bikeId: {
+  bikeNumber: {
     type: String,
     required: true,
   },

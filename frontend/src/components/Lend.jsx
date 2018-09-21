@@ -134,7 +134,7 @@ class Lend extends Component {
       },
       body: JSON.stringify({
         lender: this.state.lender,
-        bikeId: this.state.selectedBike.bikeId,
+        bikeNumber: this.state.selectedBike.bikeNumber,
         bike_id: this.state.selectedBike._id,
       }),
     })
@@ -206,7 +206,7 @@ class Lend extends Component {
                           : 'Pyörä ei ole käytössä'}
                       </Typography>
                       <Typography color="textSecondary">
-                        {`ID: ${bike.bikeId}`}
+                        {`ID: ${bike.bikeNumber}`}
                       </Typography>
                       <Typography color="textSecondary">
                         {`_id: ${bike._id}`}

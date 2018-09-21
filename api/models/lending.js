@@ -6,7 +6,7 @@ const lendingSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  bikeId: {
+  bikeNumber: {
     type: String,
     required: true,
   },

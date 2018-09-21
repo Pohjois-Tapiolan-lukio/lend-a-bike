@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/', (req, res, _) => {
   Bike.find()
-    .select('_id name bikeId usage')
+    .select('_id name bikeNumber usage')
     .then(bikes => {
       res.status(200).json(bikes);
     })
@@ -19,11 +19,11 @@ router.get('/', (req, res, _) => {
     });
 });
 
-router.get('/:bikeId', (req, res, _) => {
+router.get('/:bikeNumber', (req, res, _) => {
   Bike.findOne({
-    _id: req.params.bikeId,
+    _id: req.params.bikeNumber,
   })
-    .select('_id name bikeId usage')
+    .select('_id name bikeNumber usage')
     .then(bike => {
       res.status(200).json(bike);
     })
@@ -35,26 +35,46 @@ router.get('/:bikeId', (req, res, _) => {
 });
 
 router.post('/', auth, (req, res, _) => {
-  const bike = new Bike({
-    _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    bikeId: req.body.bikeId,
-  });
-  bike
-    .save()
+  Bike.findOne({
+    bikeNumber: req.body.bikeNumber
+  })
+    .then((conflictingBike) => {
+      console.log(conflictingBike);
+      if (conflictingBike !== null && conflictingBike.bikeNumber === req.body.bikeNumber) {
+        const e = new Error('BikeNumber is already claimed!');
+        e.name = 'ConflictError';
+        throw e;
+      }
+      return new Bike({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+        bikeNumber: req.body.bikeNumber,
+      }).save();
+    })
     .then(result => {
       res.status(200).json(result);
     })
     .catch(error => {
-      res.status(500).json({
-        error,
-      });
+      //console.log(error);
+      if (error.name === 'ValidationError') {
+        res.status(400).json({
+          error,
+        });
+      } else if (error.name === 'ConflictError') {
+        res.status(409).json({
+          error,
+        });
+      } else {
+        res.status(500).json({
+          error,
+        });
+      }
     });
 });
 
-router.patch('/:bikeId', auth, (req, res, _) => {
+router.patch('/:bikeNumber', auth, (req, res, _) => {
   Bike.findOne({
-    _id: req.params.bikeId,
+    _id: req.params.bikeNumber,
   })
     .then(bike => {
       Bike.update(bike, req.body)
@@ -74,9 +94,9 @@ router.patch('/:bikeId', auth, (req, res, _) => {
     });
 });
 
-router.delete('/:bikeId', auth, (req, res, _) => {
+router.delete('/:bikeNumber', auth, (req, res, _) => {
   Bike.findOne({
-    _id: req.params.bikeId,
+    _id: req.params.bikeNumber,
   })
     .remove()
     .then(result => {

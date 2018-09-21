@@ -148,14 +148,14 @@ const EditButton = withStyles(styles)(
         disableSubmit: false,
         submitStatus: '',
         name: props.bike.name,
-        bikeId: props.bike.bikeId,
+        bikeNumber: props.bike.bikeNumber,
       };
     }
     static propTypes = {
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        bikeId: PropTypes.string.isRequired,
+        bikeNumber: PropTypes.string.isRequired,
       }).isRequired,
       adminToken: PropTypes.string.isRequired,
       onEdit: PropTypes.func,
@@ -168,7 +168,7 @@ const EditButton = withStyles(styles)(
       this.setState({
         dialogOpen: true,
         name: this.props.bike.name,
-        bikeId: this.props.bike.bikeId,
+        bikeNumber: this.props.bike.bikeNumber,
       });
     handleChange = key => event => this.setState({ [key]: event.target.value });
 
@@ -186,7 +186,7 @@ const EditButton = withStyles(styles)(
         },
         body: JSON.stringify({
           name: this.state.name,
-          bikeId: this.state.bikeId,
+          bikeNumber: this.state.bikeNumber,
         }),
       })
         .then(result => {
@@ -195,7 +195,7 @@ const EditButton = withStyles(styles)(
               if (result.status === 200) {
                 this.setState({
                   name: '',
-                  bikeId: '',
+                  bikeNumber: '',
                   dialogOpen: false,
                   disableSubmit: false,
                   submitStatus: result.status.toString(),
@@ -254,10 +254,10 @@ const EditButton = withStyles(styles)(
                     required
                     fullWidth
                     className={classes.textField}
-                    id="bikeId"
+                    id="bikeNumber"
                     placeholder="Pyörän ID"
-                    value={this.state.bikeId}
-                    onChange={this.handleChange('bikeId')}
+                    value={this.state.bikeNumber}
+                    onChange={this.handleChange('bikeNumber')}
                   />
                 </Grid>
               </Grid>
@@ -298,14 +298,14 @@ const ListButton = withStyles(styles)(
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        bikeId: PropTypes.string.isRequired,
+        bikeNumber: PropTypes.string.isRequired,
       }).isRequired,
       adminToken: PropTypes.string.isRequired,
       bikes: PropTypes.arrayOf(
         PropTypes.shape({
           _id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
-          bikeId: PropTypes.string.isRequired,
+          bikeNumber: PropTypes.string.isRequired,
         }).isRequired
       ),
       lendings: PropTypes.arrayOf(
@@ -313,7 +313,7 @@ const ListButton = withStyles(styles)(
           _id: PropTypes.string.isRequired,
           lender: PropTypes.string.isRequired,
           bike_id: PropTypes.string.isRequired,
-          bikeId: PropTypes.string.isRequired,
+          bikeNumber: PropTypes.string.isRequired,
           time: PropTypes.shape({
             lent: PropTypes.string.isRequired,
             returned: PropTypes.string.isRequired,

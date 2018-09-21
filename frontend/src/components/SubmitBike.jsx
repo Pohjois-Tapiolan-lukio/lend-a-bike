@@ -35,7 +35,7 @@ class SubmitBike extends Component {
       disableSubmit: false,
       submitStatus: '',
       name: '',
-      bikeId: '',
+      bikeNumber: '',
     };
   }
 
@@ -59,7 +59,7 @@ class SubmitBike extends Component {
       },
       body: JSON.stringify({
         name: this.state.name,
-        bikeId: this.state.bikeId,
+        bikeNumber: this.state.bikeNumber,
       }),
     })
       .then(result => {
@@ -68,7 +68,7 @@ class SubmitBike extends Component {
             if (result.status === 200) {
               this.setState({
                 name: '',
-                bikeId: '',
+                bikeNumber: '',
                 open: false,
                 disableSubmit: false,
                 submitStatus: result.status.toString(),
@@ -113,6 +113,7 @@ class SubmitBike extends Component {
                 {
                   {
                     '201': 'Pyörä luotu',
+                    '400': 'Lomake ei vastaa vaatimuksia (400)',
                     '403': 'Ei oikeutta (403)',
                     '409': 'Pyörä on jo lisätty (409)',
                   }[this.state.submitStatus]
@@ -135,10 +136,10 @@ class SubmitBike extends Component {
                   required
                   fullWidth
                   className={classes.textField}
-                  id="bikeId"
+                  id="bikeNumber"
                   placeholder="Pyörän ID"
-                  value={this.state.bikeId}
-                  onChange={this.handleChange('bikeId')}
+                  value={this.state.bikeNumber}
+                  onChange={this.handleChange('bikeNumber')}
                 />
               </Grid>
             </Grid>

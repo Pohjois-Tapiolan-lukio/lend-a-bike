@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', (req, res, _) => {
   console.log(req.query);
   Lending.find()
-    .select('_id lender bikeId bike_id time')
+    .select('_id lender bikeNumber bike_id time')
     .then(lendings => {
       let body = lendings;
       if (req.query.filter === 'unreturned') {
@@ -37,7 +37,7 @@ router.get('/:lendingId', (req, res, _) => {
   Lending.findOne({
     _id: req.params.lendingId,
   })
-    .select('_id lender bikeId bike_id time')
+    .select('_id lender bikeNumber bike_id time')
     .then(lending => {
       res.status(200).json(lending);
     })
@@ -51,14 +51,14 @@ router.get('/:lendingId', (req, res, _) => {
 router.post('/', (req, res, _) => {
   Lending.find()
     .then(lendings => {
-      if (req.body.bikeId === undefined || req.body.bike_id === undefined) {
+      if (req.body.bikeNumber === undefined || req.body.bike_id === undefined) {
         return res.status(400).json({
           message: 'BikeId and bike_id are required',
         });
       }
 
       const lendingsInUse = lendings.filter(lending => {
-        if (lending.bikeId === new String(req.body.bikeId).valueOf()) {
+        if (lending.bikeNumber === new String(req.body.bikeNumber).valueOf()) {
           // Epoch 0 means that the bike is in use
           if (
             new Date(lending.time.returned).getTime() === new Date(0).getTime()
@@ -80,7 +80,7 @@ router.post('/', (req, res, _) => {
       const lending = new Lending({
         _id: new mongoose.Types.ObjectId(),
         lender: req.body.lender,
-        bikeId: req.body.bikeId,
+        bikeNumber: req.body.bikeNumber,
         bike_id: req.body.bike_id,
       });
       lending

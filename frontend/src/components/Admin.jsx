@@ -138,7 +138,7 @@ class Admin extends Component {
                   className={classes.textField}
                   id="password"
                   placeholder="Salasana"
-                  value={this.state.bikeId}
+                  value={this.state.bikeNumber}
                   onChange={this.handleChange('password')}
                 />
               </Grid>

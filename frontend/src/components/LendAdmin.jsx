@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Delete, Edit, ViewList } from '@material-ui/icons';
-import red from '@material-ui/core/colors/red';
+import { red, grey as gray } from '@material-ui/core/colors';
 
 const styles = theme => ({
   cardAction: {
@@ -35,13 +35,24 @@ const styles = theme => ({
   textField: {
     marginTop: theme.spacing.unit,
   },
+  listText: {
+    marginRight: 2 * theme.spacing.unit,
+  },
+  listDialogContent: {
+    padding: 0,
+  },
+  listList: {
+    '&>li:nth-child(odd)': {
+      background: gray[100],
+    },
+  },
 });
 
 export const BikeCardButtons = withStyles(styles)(props => (
   <Fragment>
     <DeleteButton {...props} />
     <EditButton {...props} />
-    <ListButton {...props} />
+    <ListButton {...{ ...props, styles }} />
   </Fragment>
 ));
 
@@ -161,7 +172,7 @@ const EditButton = withStyles(styles)(
       });
     handleChange = key => event => this.setState({ [key]: event.target.value });
 
-    submitBike = () => {
+    patchBike = () => {
       this.setState({ disableSubmit: true });
 
       const Authorization = this.props.adminToken
@@ -219,8 +230,6 @@ const EditButton = withStyles(styles)(
             <DialogContent>
               <Grid container>
                 <DialogContentText id="alert-dialog-description">
-                  Kirjoita pyörän tiedot
-                  <br />
                   {
                     {
                       '200': 'Pyörä muokattu',
@@ -262,7 +271,7 @@ const EditButton = withStyles(styles)(
                 Kumoa
               </Button>
               <Button
-                onClick={this.submitBike}
+                onClick={this.patchBike}
                 color="primary"
                 disabled={this.state.disableSubmit}
               >
@@ -292,49 +301,66 @@ const ListButton = withStyles(styles)(
         bikeId: PropTypes.string.isRequired,
       }).isRequired,
       adminToken: PropTypes.string.isRequired,
+      bikes: PropTypes.arrayOf(
+        PropTypes.shape({
+          _id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          bikeId: PropTypes.string.isRequired,
+        }).isRequired
+      ),
+      lendings: PropTypes.arrayOf(
+        PropTypes.shape({
+          _id: PropTypes.string.isRequired,
+          lender: PropTypes.string.isRequired,
+          bike_id: PropTypes.string.isRequired,
+          bikeId: PropTypes.string.isRequired,
+          time: PropTypes.shape({
+            lent: PropTypes.string.isRequired,
+            returned: PropTypes.string.isRequired,
+          }),
+        })
+      ),
     };
     static defaultProps = {};
     closeDialog = () => this.setState({ dialogOpen: false });
     openDialog = () => this.setState({ dialogOpen: true });
-    reloadLendings = () => {
-      fetch('/api/lendings?filter=unreturned', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(result => result.json())
-        .then(result => {
-          this.setState({
-            lendings: result,
-          });
-        })
-        .catch(error => console.log);
-    };
 
     render() {
+      const { bike, lendings, classes } = this.props;
       return (
         <Fragment>
           <Button onClick={this.openDialog}>
             <ViewList />
           </Button>
-          <Dialog open={this.state.dialogOpen} onClose={this.closeDialog}>
+          <Dialog
+            open={this.state.dialogOpen}
+            onClose={this.closeDialog}
+            fullWidth
+          >
             <DialogTitle id="alert-dialog-title">Pyörän lainaukset</DialogTitle>
-            <DialogContent>
-              <List>
-                {this.state.lendings.map(lendings => (
-                  <ListItem>
-                    <ListItemText
-                      primary=''
-                      secondary=''
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete">
-                        <Delete />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
+            <DialogContent className={classes.listDialogContent}>
+              <List className={classes.listList}>
+                {lendings
+                  .filter(lending => lending.bike_id === bike._id)
+                  .map(lending => (
+                    <ListItem
+                      key={lending._id}
+                      className={`${classes.listItem} ${classes.test}`}
+                    >
+                      <ListItemText
+                        className={classes.listText}
+                        primary={lending.lender}
+                        secondary={new Date(
+                          lending.time.lent
+                        ).toLocaleString('fi-FI')}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton aria-label="Delete">
+                          <Delete />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
               </List>
             </DialogContent>
           </Dialog>

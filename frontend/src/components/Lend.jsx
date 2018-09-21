@@ -101,7 +101,7 @@ class Lend extends Component {
   };
   // TODO Fetch should be static
   reloadLendings = () => {
-    fetch('/api/lendings?filter=unreturned', {
+    fetch('/api/lendings', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -115,9 +115,9 @@ class Lend extends Component {
       })
       .catch(error => console.log);
   };
-  handleSelect = bikeId => () => {
+  handleSelect = bike => () => {
     this.setState({
-      selectedBike: this.state.selectedBike === bikeId ? '' : bikeId,
+      selectedBike: this.state.selectedBike === bike ? '' : bike,
     });
   };
   handleChange = key => event => {
@@ -134,7 +134,8 @@ class Lend extends Component {
       },
       body: JSON.stringify({
         lender: this.state.lender,
-        bikeId: this.state.selectedBike,
+        bikeId: this.state.selectedBike.bikeId,
+        bike_id: this.state.selectedBike._id,
       }),
     })
       .then(result => {
@@ -182,18 +183,18 @@ class Lend extends Component {
         <Grid container className={classes.cardgrid} spacing={8}>
           {this.state.bikes.map(bike => {
             const bikeInUse = this.state.lendings.filter(
-              lending => lending.bikeId === bike.bikeId
+              lending => lending.bike_id === bike._id
             );
 
             return (
               <Grid item xs={12} sm={6} key={bike._id}>
                 <Card
                   className={classes.card}
-                  raised={this.state.selectedBike === bike.bikeId}
+                  raised={this.state.selectedBike._id === bike._id}
                 >
                   <ButtonBase
                     className={classes.cardAction}
-                    onClick={this.handleSelect(bike.bikeId)}
+                    onClick={this.handleSelect(bike)}
                   >
                     <CardContent>
                       <Typography variant="headline" component="h2">
@@ -220,6 +221,8 @@ class Lend extends Component {
                           onDelete={this.reloadBikes}
                           onEdit={this.reloadBikes}
                           adminToken={this.props.adminToken}
+                          bikes={this.state.bikes}
+                          lendings={this.state.lendings}
                         />
                       </CardActions>
 

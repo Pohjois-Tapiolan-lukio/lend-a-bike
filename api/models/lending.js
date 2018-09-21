@@ -10,6 +10,7 @@ const lendingSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  bike_id: mongoose.Schema.Types.ObjectId,
   time: {
     lent: {
       type: Date,
@@ -18,7 +19,7 @@ const lendingSchema = mongoose.Schema({
     returned: {
       type: Date,
       default: 0,
-    }
+    },
   },
 });
 

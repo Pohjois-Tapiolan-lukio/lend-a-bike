@@ -218,6 +218,7 @@ class Lend extends Component {
                         <BikeCardButtons
                           bike={bike}
                           onDelete={this.reloadBikes}
+                          onEdit={this.reloadBikes}
                           adminToken={this.props.adminToken}
                         />
                       </CardActions>

@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', (req, res, _) => {
   console.log(req.query);
   Lending.find()
-    .select('_id lender bikeId time')
+    .select('_id lender bikeId bike_id time')
     .then(lendings => {
       let body = lendings;
       if (req.query.filter === 'unreturned') {
@@ -37,7 +37,7 @@ router.get('/:lendingId', (req, res, _) => {
   Lending.findOne({
     _id: req.params.lendingId,
   })
-    .select('_id lender bikeId time')
+    .select('_id lender bikeId bike_id time')
     .then(lending => {
       res.status(200).json(lending);
     })
@@ -51,9 +51,9 @@ router.get('/:lendingId', (req, res, _) => {
 router.post('/', (req, res, _) => {
   Lending.find()
     .then(lendings => {
-      if (req.body.bikeId === undefined) {
+      if (req.body.bikeId === undefined || req.body.bike_id === undefined) {
         return res.status(400).json({
-          message: "Where's my bikeId!",
+          message: 'BikeId and bike_id are required',
         });
       }
 
@@ -81,6 +81,7 @@ router.post('/', (req, res, _) => {
         _id: new mongoose.Types.ObjectId(),
         lender: req.body.lender,
         bikeId: req.body.bikeId,
+        bike_id: req.body.bike_id,
       });
       lending
         .save()

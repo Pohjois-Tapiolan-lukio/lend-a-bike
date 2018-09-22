@@ -47,7 +47,7 @@ class Lend extends Component {
       disableSubmit: false,
       // TODO Dialogs in separate components
       dialogOpen: false,
-      submitStatus: 0,
+      submitStatus: -1,
       lendingListOpen: false,
     };
   }
@@ -120,7 +120,12 @@ class Lend extends Component {
             submitStatus: result.status.toString(),
           });
           this.reloadLendings();
-          setTimeout(this.closeDialog, 800);
+          setTimeout(() => {
+            this.closeDialog()
+            this.setState({
+              submitStatus: -1,
+            })
+          }, 800);
         } else {
           this.setState({
             disableSubmit: false,
@@ -180,13 +185,10 @@ class Lend extends Component {
                       <Typography color="textPrimary">
                         {bikeInUse.length > 0
                           ? 'Pyörä on varattu'
-                          : 'Pyörää on vapaana'}
+                          : 'Pyörä on vapaana'}
                       </Typography>
                       <Typography color="textSecondary">
-                        {`Number: ${bike.bikeNumber}`}
-                      </Typography>
-                      <Typography color="textSecondary">
-                        {`_id: ${bike._id}`}
+                        {`Pyörän numero: ${bike.bikeNumber}`}
                       </Typography>
                     </CardContent>
                   </ButtonBase>
@@ -220,7 +222,7 @@ class Lend extends Component {
           this.filterLendingsByBike(this.state.selectedBike)[0] ? (
             <ReturnBike
               selectedBike={this.state.selectedBike}
-              onReturn={this.reloadBikes}
+              onReturn={this.reloadLendings}
             />
           ) : (
             <LendBike

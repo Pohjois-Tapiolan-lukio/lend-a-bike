@@ -340,7 +340,8 @@ const ListButton = withStyles(styles)(
             <DialogTitle id="alert-dialog-title">Pyörän lainaukset</DialogTitle>
             <DialogContent className={classes.listDialogContent}>
               <List className={classes.listList}>
-                {lendings
+                {[]
+                  .concat(lendings)
                   .reverse()
                   .filter(lending => lending.bike_id === bike._id)
                   .map(lending => (

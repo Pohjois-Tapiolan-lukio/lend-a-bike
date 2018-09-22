@@ -183,9 +183,8 @@ export const ReturnBike = withStyles(styles)(
                   <br />
                   {
                     {
-                      '200': 'Lainaus luotu',
-                      '403': 'Ei oikeutta (403)',
-                      '409': 'Pyörä on käytössä (409)',
+                      '200': 'Pyörä palautettu',
+                      '400': 'Huono pyyntö (400)',
                     }[this.state.submitStatus]
                   }
                 </DialogContentText>

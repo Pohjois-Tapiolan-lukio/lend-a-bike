@@ -82,7 +82,7 @@ const DeleteButton = withStyles(styles)(
         if (this.state.timeoutId !== -1) {
           clearTimeout(this.state.timeoutId);
         }
-        this.delete().then(this.onDelete);
+        this.delete();
         this.setState({
           pressedOnce: false,
         });
@@ -118,7 +118,7 @@ const DeleteButton = withStyles(styles)(
             clearTimeout(this.state.timeoutId);
           }
         })
-        .then(this.props.onDelete())
+        .then(this.props.onDelete)
         .catch(error => {
           console.log(error);
         });
@@ -341,6 +341,7 @@ const ListButton = withStyles(styles)(
             <DialogContent className={classes.listDialogContent}>
               <List className={classes.listList}>
                 {lendings
+                  .reverse()
                   .filter(lending => lending.bike_id === bike._id)
                   .map(lending => (
                     <ListItem
@@ -350,9 +351,9 @@ const ListButton = withStyles(styles)(
                       <ListItemText
                         className={classes.listText}
                         primary={lending.lender}
-                        secondary={new Date(
-                          lending.time.lent
-                        ).toLocaleString('fi-FI')}
+                        secondary={new Date(lending.time.lent).toLocaleString(
+                          'fi-FI'
+                        )}
                       />
                       <ListItemSecondaryAction>
                         <IconButton aria-label="Delete">

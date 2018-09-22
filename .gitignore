@@ -1,5 +1,5 @@
 .sw*
-.vim
+Session.vim
 yarn.lock
 node_modules/
 data/

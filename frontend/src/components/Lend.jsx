@@ -1,67 +1,40 @@
 import React, { Component, Fragment } from 'react';
 import {
   Typography,
-  Button,
   Grid,
   Card,
   CardContent,
   CardActions,
   ButtonBase,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { DirectionsBike, Delete } from '@material-ui/icons';
-import red from '@material-ui/core/colors/red';
 
 import SubmitBike from './SubmitBike';
 import { BikeCardButtons } from './LendAdmin';
+import { LendBike, ReturnBike } from './LendUtils';
 
-const styles = theme => {
-  //console.log(theme);
-  return {
-    flex: {
-      flexGrow: 1,
-    },
-    fabs: {
-      bottom: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 2,
-      position: 'fixed',
-    },
-    fab: {
-      marginLeft: theme.spacing.unit,
-      background: 'linear-gradient(45deg, #c51162 30%, #f4701d 90%)',
-      color: 'white',
-    },
-    extendedIcon: {
-      marginRight: theme.spacing.unit,
-    },
-    cardgrid: {
-      marginTop: 64,
-    },
-    card: {
-      transition: 'box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-    },
-    cardAction: {
-      display: 'block',
-      textAlign: 'initial',
-      width: '100%',
-      height: '100%',
-    },
-    deleteConfirm: {
-      color: red[400],
-    },
-  };
-};
+const styles = theme => ({
+  fabs: {
+    bottom: theme.spacing.unit * 2,
+    right: theme.spacing.unit * 2,
+    position: 'fixed',
+  },
+  extendedIcon: {
+    marginRight: theme.spacing.unit,
+  },
+  cardgrid: {
+    marginTop: 64,
+  },
+  card: {
+    transition: 'box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+  },
+  cardAction: {
+    display: 'block',
+    textAlign: 'initial',
+    width: '100%',
+    height: '100%',
+  },
+});
 
 class Lend extends Component {
   constructor(props) {
@@ -175,6 +148,12 @@ class Lend extends Component {
     this.setState({
       lendingListOpen: false,
     });
+  filterLendingsByBike = bike =>
+    this.state.lendings.filter(
+      lending =>
+        lending.bike_id === bike._id &&
+        new Date(lending.time.returned).getTime() === new Date(0).getTime()
+    );
 
   render() {
     const { classes } = this.props;
@@ -182,9 +161,7 @@ class Lend extends Component {
       <Fragment>
         <Grid container className={classes.cardgrid} spacing={8}>
           {this.state.bikes.map(bike => {
-            const bikeInUse = this.state.lendings.filter(
-              lending => lending.bike_id === bike._id
-            );
+            const bikeInUse = this.filterLendingsByBike(bike);
 
             return (
               <Grid item xs={12} sm={6} key={bike._id}>
@@ -202,11 +179,11 @@ class Lend extends Component {
                       </Typography>
                       <Typography color="textPrimary">
                         {bikeInUse.length > 0
-                          ? `Pyörää käyttää ${bikeInUse[0].lender}`
-                          : 'Pyörä ei ole käytössä'}
+                          ? 'Pyörä on varattu'
+                          : 'Pyörää on vapaana'}
                       </Typography>
                       <Typography color="textSecondary">
-                        {`ID: ${bike.bikeNumber}`}
+                        {`Number: ${bike.bikeNumber}`}
                       </Typography>
                       <Typography color="textSecondary">
                         {`_id: ${bike._id}`}
@@ -225,30 +202,6 @@ class Lend extends Component {
                           lendings={this.state.lendings}
                         />
                       </CardActions>
-
-                      <Dialog
-                        open={this.state.lendingListOpen}
-                        onClose={this.closeLendingList}
-                      >
-                        <DialogTitle id="alert-dialog-title">
-                          Pyörän lainaukset
-                        </DialogTitle>
-                        <DialogContent>
-                          <List>
-                            <ListItem>
-                              <ListItemText
-                                primary="Single-line item"
-                                secondary="Secondary text"
-                              />
-                              <ListItemSecondaryAction>
-                                <IconButton aria-label="Delete">
-                                  <Delete />
-                                </IconButton>
-                              </ListItemSecondaryAction>
-                            </ListItem>
-                          </List>
-                        </DialogContent>
-                      </Dialog>
                     </Fragment>
                   ) : (
                     ''
@@ -263,87 +216,30 @@ class Lend extends Component {
             reloadBikes={this.reloadBikes}
             adminToken={this.props.adminToken}
           />
-          <LendBike
-            selectedBike={this.state.selectedBike}
-            handleChange={this.handleChange}
-            lender={this.state.lender}
-            dialogOpen={this.state.dialogOpen}
-            closeDialog={this.closeDialog}
-            openDialog={this.openDialog}
-            submit={this.submit}
-            disableSubmit={this.state.disableSubmit}
-            submitStatus={this.state.submitStatus}
-          />
+          {this.state.selectedBike !== '' &&
+          this.filterLendingsByBike(this.state.selectedBike)[0] ? (
+            <ReturnBike
+              selectedBike={this.state.selectedBike}
+              onReturn={this.reloadBikes}
+            />
+          ) : (
+            <LendBike
+              selectedBike={this.state.selectedBike}
+              handleChange={this.handleChange}
+              lender={this.state.lender}
+              dialogOpen={this.state.dialogOpen}
+              closeDialog={this.closeDialog}
+              openDialog={this.openDialog}
+              submit={this.submit}
+              disableSubmit={this.state.disableSubmit}
+              submitStatus={this.state.submitStatus}
+            />
+          )}
         </div>
       </Fragment>
     );
   }
 }
-
-const LendBike = withStyles(styles)(props => (
-  <Fragment>
-    <Button
-      className={props.classes.fab}
-      variant="extendedFab"
-      disabled={props.selectedBike === ''}
-      onClick={props.openDialog}
-    >
-      <DirectionsBike className={props.classes.extendedIcon} />
-      Lainaa
-    </Button>
-    <Dialog
-      open={props.dialogOpen}
-      onClose={props.closeDialog}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">Lainaa pyörä</DialogTitle>
-      <DialogContent>
-        <Grid container>
-          <DialogContentText id="alert-dialog-description">
-            Kirjoita tietosi
-            <br />
-            {
-              {
-                '200': 'Lainaus luotu',
-                '403': 'Ei oikeutta (403)',
-                '409': 'Pyörä on käytössä (409)',
-              }[props.submitStatus]
-            }
-          </DialogContentText>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              autoFocus
-              className={props.classes.textField}
-              id="lender"
-              placeholder="Nimi"
-              value={props.lender}
-              onChange={props.handleChange('lender')}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={props.closeDialog}
-          variant="contained"
-          color="secondary"
-        >
-          Sulje
-        </Button>
-        <Button
-          onClick={props.submit}
-          color="primary"
-          disabled={props.disableSubmit}
-        >
-          Lainaa
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </Fragment>
-));
 
 export default withStyles(styles)(Lend);
 

@@ -15,12 +15,12 @@ router.get('/', (req, res, _) => {
       if (req.query.filter === 'unreturned') {
         body = lendings.filter(
           lending =>
-            new Date(lending.time.returned).getTime() === new Date(0).getTime(),
+            new Date(lending.time.returned).getTime() === new Date(0).getTime()
         );
       } else if (req.query.filter === 'returned') {
         body = lendings.filter(
           lending =>
-            new Date(lending.time.returned).getTime() !== new Date(0).getTime(),
+            new Date(lending.time.returned).getTime() !== new Date(0).getTime()
         );
       }
       res.status(200).json(body);
@@ -125,6 +125,45 @@ router.patch('/:lendingId', (req, res, _) => {
         message: error,
       });
     });
+});
+
+router.patch('/return/:bike_id', (req, res) => {
+  Lending.find({
+    bike_id: req.params.bike_id,
+  })
+    .where('time.returned')
+    .eq(0)
+    .then(lendings => {
+      if (lendings.length === 0) {
+        return res.status(400).json({
+          message: 'The bike is not lent',
+        });
+      }
+      const lending = lendings[0];
+      if (req.body.lender !== lending.lender) {
+        return res.status(400).json({
+          message: 'Wrong lender',
+        });
+      }
+      Lending.update(lending, {
+        $currentDate: {
+          'time.returned': 'date',
+        },
+      })
+        .then(result => {
+          res.status(200).json(result);
+        })
+        .catch(error =>
+          res.status(500).json({
+            error,
+          })
+        );
+    })
+    .catch(error =>
+      res.status(400).json({
+        message: error,
+      })
+    );
 });
 
 module.exports = router;

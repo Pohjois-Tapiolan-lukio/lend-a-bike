@@ -61,4 +61,9 @@ services:
             database:
                 condition: service_healthy
 
+    swaggereditor:
+        image: swaggerapi/swagger-editor
+        ports:
+            - 8080:8080
+
 # vim: et ts=4 sw=4 :

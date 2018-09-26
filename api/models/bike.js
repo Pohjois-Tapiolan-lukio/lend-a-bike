@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Lending = require('./lending');
 
 const bikeSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -10,15 +9,6 @@ const bikeSchema = mongoose.Schema({
   bikeNumber: {
     type: String,
     required: true,
-  },
-  usage: {
-    available: {
-      type: Boolean,
-      default: true,
-    },
-    //lendings: [
-    //  Lending,
-    //],
   },
 });
 

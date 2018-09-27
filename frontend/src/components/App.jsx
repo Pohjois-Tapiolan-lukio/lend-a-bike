@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 
 import Titlebar from './Titlebar';
 import Lend from './Lend';
-import AdminDrawer from './AdminDrawer';
+
+DataContext = React.createContext();
 
 class App extends Component {
   constructor(props) {
@@ -15,10 +16,10 @@ class App extends Component {
   setToken = token => this.setState({ token });
   render() {
     return (
-      <AdminDrawer adminToken={this.state.token}>
-        {/*<Titlebar setToken={this.setToken} />*/}
+      <div>
+        <Titlebar setToken={this.setToken} adminToken={this.state.token} />
         <Lend adminToken={this.state.token} />
-      </AdminDrawer>
+      </div>
     );
   }
 }

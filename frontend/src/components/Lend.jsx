@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import classNames from 'classnames';
 import {
   Typography,
   Grid,
@@ -9,7 +10,6 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
-import SubmitBike from './SubmitBike';
 import { BikeCardButtons } from './LendAdmin';
 import { LendBike, ReturnBike } from './LendUtils';
 
@@ -23,10 +23,19 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
   },
   cardgrid: {
-    marginTop: 64,
+    [theme.breakpoints.down('sm')]: {
+      marginTop: 56 + theme.spacing.unit,
+    },
+    [theme.breakpoints.up('sm')]: {
+      marginTop: 64 + theme.spacing.unit,
+    },
   },
   card: {
-    transition: 'box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transition: `box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+      background 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms`,
+  },
+  selected: {
+    background: '#ddd',
   },
   cardAction: {
     display: 'block',
@@ -72,7 +81,6 @@ class Lend extends Component {
         console.log(error);
       });
   };
-  // TODO Fetch should be static
   reloadLendings = () => {
     fetch('/api/lendings', {
       method: 'GET',
@@ -84,6 +92,19 @@ class Lend extends Component {
       .then(result => {
         this.setState({
           lendings: result,
+        });
+      })
+      .catch(error => console.log);
+    fetch('/api/lendings?latest=true', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(result => result.json())
+      .then(result => {
+        this.setState({
+          latestLendings: result,
         });
       })
       .catch(error => console.log);
@@ -121,10 +142,10 @@ class Lend extends Component {
           });
           this.reloadLendings();
           setTimeout(() => {
-            this.closeDialog()
+            this.closeDialog();
             this.setState({
               submitStatus: -1,
-            })
+            });
           }, 800);
         } else {
           this.setState({
@@ -159,6 +180,14 @@ class Lend extends Component {
         lending.bike_id === bike._id &&
         new Date(lending.time.returned).getTime() === new Date(0).getTime()
     );
+  filterBikesByUsage = () => ({
+    bikesInUse: this.state.lendings
+      .filter(
+        lending =>
+          new Date(lending.time.returned).getTime() === new Date(0).getTime()
+      )
+      .map(lending => lending.bike_id),
+  });
 
   render() {
     const { classes } = this.props;
@@ -171,7 +200,10 @@ class Lend extends Component {
             return (
               <Grid item xs={12} sm={6} key={bike._id}>
                 <Card
-                  className={classes.card}
+                  className={classNames(classes.card, {
+                    [classes.selected]:
+                      this.state.selectedBike._id === bike._id,
+                  })}
                   raised={this.state.selectedBike._id === bike._id}
                 >
                   <ButtonBase
@@ -214,10 +246,6 @@ class Lend extends Component {
           })}
         </Grid>
         <div className={classes.fabs}>
-          <SubmitBike
-            reloadBikes={this.reloadBikes}
-            adminToken={this.props.adminToken}
-          />
           {this.state.selectedBike !== '' &&
           this.filterLendingsByBike(this.state.selectedBike)[0] ? (
             <ReturnBike

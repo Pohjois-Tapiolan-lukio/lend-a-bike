@@ -225,6 +225,7 @@ const EditButton = withStyles(styles)(
             onClose={this.closeDialog}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            fullWidth
           >
             <DialogTitle id="alert-dialog-title">Muokkaa pyörää</DialogTitle>
             <DialogContent>
@@ -340,29 +341,38 @@ const ListButton = withStyles(styles)(
             <DialogTitle id="alert-dialog-title">Pyörän lainaukset</DialogTitle>
             <DialogContent className={classes.listDialogContent}>
               <List className={classes.listList}>
-                {[]
-                  .concat(lendings)
-                  .reverse()
-                  .filter(lending => lending.bike_id === bike._id)
-                  .map(lending => (
-                    <ListItem
-                      key={lending._id}
-                      className={`${classes.listItem} ${classes.test}`}
-                    >
-                      <ListItemText
-                        className={classes.listText}
-                        primary={lending.lender}
-                        secondary={new Date(lending.time.lent).toLocaleString(
-                          'fi-FI'
-                        )}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton aria-label="Delete">
-                          <Delete />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
+                {lendings.length ? (
+                  []
+                    .concat(lendings)
+                    .reverse()
+                    .filter(lending => lending.bike_id === bike._id)
+                    .map(lending => (
+                      <ListItem
+                        key={lending._id}
+                        className={`${classes.listItem} ${classes.test}`}
+                      >
+                        <ListItemText
+                          className={classes.listText}
+                          primary={lending.lender}
+                          secondary={new Date(lending.time.lent).toLocaleString(
+                            'fi-FI'
+                          )}
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton aria-label="Delete">
+                            <Delete />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ))
+                ) : (
+                  <ListItem className={`${classes.listItem} ${classes.test}`}>
+                    <ListItemText
+                      className={classes.listText}
+                      primary="Ei lainauksia"
+                    />
+                  </ListItem>
+                )}
               </List>
             </DialogContent>
           </Dialog>

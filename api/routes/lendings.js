@@ -2,12 +2,32 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const Lending = require('../models/lending');
+const Bike = require('../models/bike');
 const auth = require('../auth');
 
 const router = express.Router();
 
+sortByTimeReturned = (a, b) => {
+  const A = new Date(a.time.returned);
+  const B = new Date(b.time.returned);
+
+  if (A < B) return -1;
+  if (A > B) return 1;
+  return 0;
+};
+
 router.get('/', (req, res, _) => {
   console.log(req.query);
+  if (req.query.latest === 'true') {
+    Bike.find().then(bikes => {
+      bikes.map(bike =>
+        Lending.find({ bike_id: bike._id })
+          .then(lendings => lendings.sort(sortByTimeReturned))
+          .then(lendings => lendings.slice(-1)[0])
+          .then(console.log)
+      );
+    });
+  }
   Lending.find()
     .select('_id lender bikeNumber bike_id time')
     .then(lendings => {

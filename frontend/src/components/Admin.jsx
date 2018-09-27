@@ -102,7 +102,7 @@ class Admin extends Component {
     return (
       <Fragment>
         <Button onClick={this.openDialog} color="inherit">
-          Admin login
+          {this.props.adminToken ? 'Logged in' : 'Admin login'}
         </Button>
         <Dialog
           open={this.state.open}

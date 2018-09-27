@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import {
-  //Typography,
   Button,
   Dialog,
   DialogActions,
@@ -9,19 +8,14 @@ import {
   DialogTitle,
   TextField,
   Grid,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
 
 const styles = theme => ({
-  fab: {
-    marginLeft: theme.spacing.unit,
-    background: 'linear-gradient(45deg, #c51162 30%, #f4701d 90%)',
-    color: 'white',
-  },
-  extendedIcon: {
-    marginRight: theme.spacing.unit,
-  },
   textField: {
     marginTop: theme.spacing.unit,
   },
@@ -90,14 +84,12 @@ class SubmitBike extends Component {
     const { classes } = this.props;
     return (
       <Fragment>
-        <Button
-          className={classes.fab}
-          variant="extendedFab"
-          onClick={this.openDialog}
-        >
-          <Add className={classes.extendedIcon} />
-          Lisää
-        </Button>
+        <ListItem button onClick={this.openDialog}>
+          <ListItemIcon>
+            <Add />
+          </ListItemIcon>
+          <ListItemText primary="Lisää pyörä" />
+        </ListItem>
         <Dialog
           open={this.state.open}
           onClose={this.closeDialog}

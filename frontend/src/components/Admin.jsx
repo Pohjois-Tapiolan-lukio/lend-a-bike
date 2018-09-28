@@ -8,9 +8,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-//import { Redirect } from 'react-router-dom';
+import { withContext } from './DataContext';
+import { Add, PowerSettingsNew } from '@material-ui/icons';
 
 const styles = theme => ({
   Button: {
@@ -21,19 +25,13 @@ const styles = theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
   },
-  root: {
-    marginTop: 20,
-    flexGrow: 1,
-    //maxWidth: 600,
-    padding: theme.spacing.unit * 2,
-  },
   close: {
     width: theme.spacing.unit * 4,
     height: theme.spacing.unit * 4,
   },
 });
 
-class Admin extends Component {
+class AdminLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,11 +50,6 @@ class Admin extends Component {
   openDialog = () => {
     this.setState({ open: true });
   };
-  //  renderRedirect = () => {
-  //    if (this.state.redirectHome) {
-  //      return <Redirect to="/" />;
-  //    }
-  //  };
   handleSubmit = () => {
     this.setState({
       disableSubmit: true,
@@ -166,6 +159,15 @@ class Admin extends Component {
   }
 }
 
-export default withStyles(styles)(Admin);
+export const AdminLogout = withContext(props => (
+  <ListItem button onClick={() => props.setToken('')}>
+    <ListItemIcon>
+      <PowerSettingsNew />
+    </ListItemIcon>
+    <ListItemText primary="Kirjaudu ulos" />
+  </ListItem>
+));
+
+export default withStyles(styles)(withContext(AdminLogin));
 
 // vim: et ts=2 sw=2 :

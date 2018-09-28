@@ -12,12 +12,14 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
+  // ListItemSecondaryAction,
+  // IconButton,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Delete, Edit, ViewList } from '@material-ui/icons';
 import { red, grey as gray } from '@material-ui/core/colors';
+
+import { withContext } from './DataContext';
 
 const styles = theme => ({
   cardAction: {
@@ -48,13 +50,15 @@ const styles = theme => ({
   },
 });
 
-export const BikeCardButtons = withStyles(styles)(props => (
-  <Fragment>
-    <DeleteButton {...props} />
-    <EditButton {...props} />
-    <ListButton {...{ ...props, styles }} />
-  </Fragment>
-));
+export const BikeCardButtons = withStyles(styles)(
+  withContext(props => (
+    <Fragment>
+      <DeleteButton {...props} />
+      <EditButton {...props} />
+      <ListButton {...{ ...props, styles }} />
+    </Fragment>
+  ))
+);
 
 const DeleteButton = withStyles(styles)(
   class extends Component {
@@ -66,16 +70,15 @@ const DeleteButton = withStyles(styles)(
       };
     }
     static propTypes = {
+      classes: PropTypes.object.isRequired,
       delay: PropTypes.number,
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
       }).isRequired,
-      onDelete: PropTypes.func,
       adminToken: PropTypes.string.isRequired,
     };
     static defaultProps = {
       delay: 2000,
-      onDelete: () => {},
     };
     handleClick = () => {
       if (this.state.pressedOnce) {
@@ -118,7 +121,7 @@ const DeleteButton = withStyles(styles)(
             clearTimeout(this.state.timeoutId);
           }
         })
-        .then(this.props.onDelete)
+        .then(this.props.reloadBikes)
         .catch(error => {
           console.log(error);
         });
@@ -152,16 +155,13 @@ const EditButton = withStyles(styles)(
       };
     }
     static propTypes = {
+      classes: PropTypes.object.isRequired,
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         bikeNumber: PropTypes.string.isRequired,
       }).isRequired,
       adminToken: PropTypes.string.isRequired,
-      onEdit: PropTypes.func,
-    };
-    static defaultProps = {
-      onEdit: () => {},
     };
     closeDialog = () => this.setState({ dialogOpen: false });
     openDialog = () =>
@@ -200,7 +200,7 @@ const EditButton = withStyles(styles)(
                   disableSubmit: false,
                   submitStatus: result.status.toString(),
                 });
-                this.props.onEdit();
+                this.props.reloadBikes();
               }
             });
           } else {
@@ -292,10 +292,10 @@ const ListButton = withStyles(styles)(
       super(props);
       this.state = {
         dialogOpen: false,
-        lendings: [],
       };
     }
     static propTypes = {
+      classes: PropTypes.object.isRequired,
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
@@ -307,7 +307,7 @@ const ListButton = withStyles(styles)(
           _id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           bikeNumber: PropTypes.string.isRequired,
-        }).isRequired
+        })
       ),
       lendings: PropTypes.arrayOf(
         PropTypes.shape({
@@ -358,11 +358,13 @@ const ListButton = withStyles(styles)(
                             'fi-FI'
                           )}
                         />
-                        <ListItemSecondaryAction>
-                          <IconButton aria-label="Delete">
-                            <Delete />
-                          </IconButton>
-                        </ListItemSecondaryAction>
+                        {/*
+                          <ListItemSecondaryAction>
+                            <IconButton aria-label="Delete">
+                              <Delete />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        */}
                       </ListItem>
                     ))
                 ) : (

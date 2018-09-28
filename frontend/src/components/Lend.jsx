@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {
   Typography,
@@ -12,6 +13,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { BikeCardButtons } from './LendAdmin';
 import { LendBike, ReturnBike } from './LendUtils';
+import { withContext } from './DataContext';
 
 const styles = theme => ({
   fabs: {
@@ -49,8 +51,6 @@ class Lend extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bikes: [],
-      lendings: [],
       selectedBike: '',
       lender: '',
       disableSubmit: false,
@@ -60,54 +60,14 @@ class Lend extends Component {
       lendingListOpen: false,
     };
   }
+  static propTypes = {
+    adminToken: PropTypes.string,
+    reloadBikes: PropTypes.func.isRequired,
+    bikes: PropTypes.array.isRequired,
+  };
   componentDidMount = () => {
-    this.reloadBikes();
-    this.reloadLendings();
-  };
-  reloadBikes = () => {
-    fetch('/api/bikes', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(result => result.json())
-      .then(result => {
-        this.setState({
-          bikes: result,
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-  reloadLendings = () => {
-    fetch('/api/lendings', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(result => result.json())
-      .then(result => {
-        this.setState({
-          lendings: result,
-        });
-      })
-      .catch(error => console.log);
-    fetch('/api/lendings?latest=true', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(result => result.json())
-      .then(result => {
-        this.setState({
-          latestLendings: result,
-        });
-      })
-      .catch(error => console.log);
+    this.props.reloadBikes();
+    this.props.reloadLendings();
   };
   handleSelect = bike => () => {
     this.setState({
@@ -140,7 +100,7 @@ class Lend extends Component {
             selectedBike: '',
             submitStatus: result.status.toString(),
           });
-          this.reloadLendings();
+          this.props.reloadLendings();
           setTimeout(() => {
             this.closeDialog();
             this.setState({
@@ -174,27 +134,29 @@ class Lend extends Component {
     this.setState({
       lendingListOpen: false,
     });
+
+  // TODO create external methods for filtering lendings
   filterLendingsByBike = bike =>
-    this.state.lendings.filter(
+    this.props.lendings.filter(
       lending =>
         lending.bike_id === bike._id &&
         new Date(lending.time.returned).getTime() === new Date(0).getTime()
     );
-  filterBikesByUsage = () => ({
-    bikesInUse: this.state.lendings
-      .filter(
-        lending =>
-          new Date(lending.time.returned).getTime() === new Date(0).getTime()
-      )
-      .map(lending => lending.bike_id),
-  });
+  // filterBikesByUsage = () => ({
+  //   bikesInUse: this.props.lendings
+  //     .filter(
+  //       lending =>
+  //         new Date(lending.time.returned).getTime() === new Date(0).getTime()
+  //     )
+  //     .map(lending => lending.bike_id),
+  // });
 
   render() {
     const { classes } = this.props;
     return (
       <Fragment>
         <Grid container className={classes.cardgrid} spacing={8}>
-          {this.state.bikes.map(bike => {
+          {this.props.bikes.map(bike => {
             const bikeInUse = this.filterLendingsByBike(bike);
 
             return (
@@ -227,14 +189,7 @@ class Lend extends Component {
                   {this.props.adminToken ? (
                     <Fragment>
                       <CardActions>
-                        <BikeCardButtons
-                          bike={bike}
-                          onDelete={this.reloadBikes}
-                          onEdit={this.reloadBikes}
-                          adminToken={this.props.adminToken}
-                          bikes={this.state.bikes}
-                          lendings={this.state.lendings}
-                        />
+                        <BikeCardButtons bike={bike} />
                       </CardActions>
                     </Fragment>
                   ) : (
@@ -250,7 +205,7 @@ class Lend extends Component {
           this.filterLendingsByBike(this.state.selectedBike)[0] ? (
             <ReturnBike
               selectedBike={this.state.selectedBike}
-              onReturn={this.reloadLendings}
+              onReturn={this.props.reloadLendings}
             />
           ) : (
             <LendBike
@@ -271,6 +226,6 @@ class Lend extends Component {
   }
 }
 
-export default withStyles(styles)(Lend);
+export default withStyles(styles)(withContext(Lend));
 
 // vim: et ts=2 sw=2 :

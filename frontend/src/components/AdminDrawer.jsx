@@ -14,6 +14,8 @@ import {
 import { Menu, Security } from '@material-ui/icons';
 
 import SubmitBike from './SubmitBike';
+import { AdminLogout } from './Admin';
+import { withContext } from './DataContext';
 
 const styles = theme => ({
   list: {
@@ -21,6 +23,14 @@ const styles = theme => ({
   },
   hide: {
     display: 'none',
+  },
+  container: {
+    display: 'flex',
+    minHeight: 'fill-available',
+    flexDirection: 'column',
+  },
+  spacer: {
+    flex: 1,
   },
   menuButton: {
     marginLeft: -theme.spacing.unit,
@@ -31,63 +41,70 @@ const styles = theme => ({
   },
 });
 
-const AdminDrawer = withStyles(styles, { withTheme: true })(
-  class extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        open: false,
+const AdminDrawer = withStyles(styles)(
+  withContext(
+    class extends Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          open: false,
+        };
+      }
+      static propTypes = {
+        classes: PropTypes.object.isRequired,
+        adminToken: PropTypes.string.isRequired,
+        reloadBikes: PropTypes.func.isRequired,
       };
+      openDrawer = () => {
+        this.setState({ open: true });
+      };
+
+      closeDrawer = () => {
+        this.setState({ open: false });
+      };
+
+      render() {
+        const { classes } = this.props;
+
+        return (
+          <Fragment>
+            <IconButton
+              color="inherit"
+              aria-label="Open drawer"
+              onClick={this.openDrawer}
+              className={classNames(classes.menuButton)}
+            >
+              <Menu />
+            </IconButton>
+            <SwipeableDrawer
+              open={this.state.open}
+              onClose={this.closeDrawer}
+              onOpen={this.openDrawer}
+            >
+              <List>
+                <div className={classes.container}>
+                  <ListItem className={classes.disableSelect}>
+                    <ListItemIcon>
+                      <Security />
+                    </ListItemIcon>
+                    <ListItemText primary="Admin valikko" />
+                  </ListItem>
+                  <Divider />
+                  <SubmitBike
+                    reloadBikes={this.props.reloadBikes}
+                    adminToken={this.props.adminToken}
+                  />
+                  <div className={classes.spacer} />
+                  <Divider />
+                  <AdminLogout />
+                </div>
+              </List>
+            </SwipeableDrawer>
+          </Fragment>
+        );
+      }
     }
-    static propTypes = {
-      classes: PropTypes.object.isRequired,
-      theme: PropTypes.object.isRequired,
-      adminToken: PropTypes.string.isRequired,
-    };
-    openDrawer = () => {
-      this.setState({ open: true });
-    };
-
-    closeDrawer = () => {
-      this.setState({ open: false });
-    };
-
-    render() {
-      const { classes } = this.props;
-
-      return (
-        <Fragment>
-          <IconButton
-            color="inherit"
-            aria-label="Open drawer"
-            onClick={this.openDrawer}
-            className={classNames(classes.menuButton)}
-          >
-            <Menu />
-          </IconButton>
-          <SwipeableDrawer
-            open={this.state.open}
-            onClose={this.closeDrawer}
-            onOpen={this.openDrawer}
-          >
-            <List>
-              <ListItem className={classes.disableSelect}>
-                <ListItemIcon>
-                  <Security />
-                </ListItemIcon>
-                <ListItemText primary="Admin valikko" />
-              </ListItem>
-              <Divider />
-              <SubmitBike
-                reloadBikes={this.reloadBikes}
-                adminToken={this.props.adminToken}
-              />
-            </List>
-          </SwipeableDrawer>
-        </Fragment>
-      );
-    }
-  }
+  )
 );
 
 export default AdminDrawer;

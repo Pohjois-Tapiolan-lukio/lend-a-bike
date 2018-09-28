@@ -7,9 +7,9 @@ const auth = require('../auth');
 
 const router = express.Router();
 
-sortByTimeReturned = (a, b) => {
-  const A = new Date(a.time.returned);
-  const B = new Date(b.time.returned);
+sortByTimeLent = (a, b) => {
+  const A = new Date(a.time.lent);
+  const B = new Date(b.time.lent);
 
   if (A < B) return -1;
   if (A > B) return 1;
@@ -22,7 +22,7 @@ router.get('/', (req, res, _) => {
     Bike.find().then(bikes => {
       bikes.map(bike =>
         Lending.find({ bike_id: bike._id })
-          .then(lendings => lendings.sort(sortByTimeReturned))
+          .then(lendings => lendings.sort(sortByTimeLent))
           .then(lendings => lendings.slice(-1)[0])
           .then(console.log)
       );

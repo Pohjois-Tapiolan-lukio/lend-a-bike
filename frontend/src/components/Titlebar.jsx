@@ -1,8 +1,9 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 
-import Admin from './Admin';
+import AdminLogin from './Admin';
 import AdminDrawer from './AdminDrawer';
+import { withContext } from './DataContext';
 
 const styles = {
   titlebar: {
@@ -13,15 +14,15 @@ const styles = {
 const Titlebar = props => (
   <AppBar position="fixed">
     <Toolbar>
-      {props.adminToken ? <AdminDrawer adminToken={props.adminToken} /> : ''}
+      {props.adminToken ? <AdminDrawer /> : ''}
       <Typography variant="headline" color="inherit" style={styles.titlebar}>
         Kampuspyörät
       </Typography>
-      <Admin setToken={props.setToken} adminToken={props.adminToken} />
+      <AdminLogin />
     </Toolbar>
   </AppBar>
 );
 
-export default Titlebar;
+export default withContext(Titlebar);
 
 // vim: et ts=2 sw=2 :

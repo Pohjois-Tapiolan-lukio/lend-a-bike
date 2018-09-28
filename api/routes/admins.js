@@ -58,7 +58,6 @@ router.post('/login', (req, res, _) => {
     .then(admin => {
       if (admin === undefined) throw new Error('Unauthorized');
 
-      console.log(req.body, admin);
       return bcrypt
         .compare(req.body.password, admin.password)
         .then(authorized => {

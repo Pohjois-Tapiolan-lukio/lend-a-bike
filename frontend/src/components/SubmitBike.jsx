@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Dialog,
@@ -14,6 +15,8 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
+
+import { withContext } from './DataContext';
 
 const styles = theme => ({
   textField: {
@@ -32,16 +35,20 @@ class SubmitBike extends Component {
       bikeNumber: '',
     };
   }
+  static propTypes = {
+    adminToken: PropTypes.string.isRequired,
+    reloadBikes: PropTypes.func.isRequired,
+  };
 
   closeDialog = () => this.setState({ open: false });
   openDialog = () => this.setState({ open: true });
   handleChange = key => event => this.setState({ [key]: event.target.value });
-
   submitBike = () => {
     this.setState({
       disableSubmit: true,
     });
 
+    // TODO useless ternary
     const Authorization = this.props.adminToken
       ? `Bearer ${this.props.adminToken}`
       : undefined;
@@ -158,6 +165,6 @@ class SubmitBike extends Component {
   }
 }
 
-export default withStyles(styles)(SubmitBike);
+export default withStyles(styles)(withContext(SubmitBike));
 
 // vim: et ts=2 sw=2 :

@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from './DataContext';
-import { PowerSettingsNew } from '@material-ui/icons';
+import { PowerSettingsNew, Security } from '@material-ui/icons';
 
 const styles = theme => ({
   Button: {
@@ -42,6 +42,7 @@ class AdminLogin extends Component {
       password: '',
       disableSubmit: false,
       open: false,
+      submitStatus: -1,
     };
   }
   handleChange = key => event => {
@@ -53,7 +54,8 @@ class AdminLogin extends Component {
   openDialog = () => {
     this.setState({ open: true });
   };
-  handleSubmit = () => {
+  handleSubmit = event => {
+    event.preventDefault();
     this.setState({
       disableSubmit: true,
     });
@@ -68,22 +70,24 @@ class AdminLogin extends Component {
         'Content-Type': 'application/json',
       },
     })
-      .then(result => {
-        result.json().then(data => {
-          if (result.status === 200) {
+      .then(response => {
+        if (response.ok) {
+          response.json().then(data => {
             this.props.setToken(data.token);
             this.setState({
               name: '',
               password: '',
               open: false,
               disableSubmit: false,
+              submitStatus: -1,
             });
-          } else {
-            this.setState({
-              disableSubmit: false,
-            });
-          }
-        });
+          });
+        } else {
+          this.setState({
+            disableSubmit: false,
+            submitStatus: response.status.toString(),
+          });
+        }
       })
       .catch(err => {
         console.error(err);
@@ -98,7 +102,7 @@ class AdminLogin extends Component {
     return (
       <Fragment>
         <Button onClick={this.openDialog} color="inherit">
-          {this.props.adminToken ? 'Kirjautunut' : 'Kirjaudu'}
+          {this.props.adminToken ? <Security /> : 'Kirjaudu'}
         </Button>
         <Dialog
           open={this.state.open}

@@ -109,22 +109,25 @@ const DeleteButton = withStyles(styles)(
       });
     };
     delete = () => {
-      return fetch(`/api/bikes/${this.props.bike._id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.props.adminToken}`,
-        },
-      })
-        .then(() => {
-          if (this.state.timeoutId !== -1) {
-            clearTimeout(this.state.timeoutId);
-          }
+      return (
+        fetch(`/api/bikes/${this.props.bike._id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.props.adminToken}`,
+          },
         })
-        .then(this.props.reloadBikes)
-        .catch(error => {
-          console.log(error);
-        });
+          // TODO Headsup
+          .then(() => {
+            if (this.state.timeoutId !== -1) {
+              clearTimeout(this.state.timeoutId);
+            }
+          })
+          .then(this.props.reloadBikes)
+          .catch(error => {
+            console.log(error);
+          })
+      );
     };
 
     render() {
@@ -159,7 +162,7 @@ const EditButton = withStyles(styles)(
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        bikeNumber: PropTypes.string.isRequired,
+        bikeNumber: PropTypes.number.isRequired,
       }).isRequired,
       adminToken: PropTypes.string.isRequired,
     };
@@ -193,24 +196,22 @@ const EditButton = withStyles(styles)(
           bikeNumber: this.state.bikeNumber,
         }),
       })
-        .then(result => {
-          if (result.ok) {
-            result.json().then(data => {
-              if (result.status === 200) {
-                this.setState({
-                  name: '',
-                  bikeNumber: '',
-                  dialogOpen: false,
-                  disableSubmit: false,
-                  submitStatus: result.status.toString(),
-                });
-                this.props.reloadBikes();
-              }
+        .then(response => {
+          if (response.ok) {
+            response.json().then(data => {
+              this.setState({
+                name: '',
+                bikeNumber: '',
+                dialogOpen: false,
+                disableSubmit: false,
+                submitStatus: -1,
+              });
+              this.props.reloadBikes();
             });
           } else {
             this.setState({
               disableSubmit: false,
-              submitStatus: result.status.toString(),
+              submitStatus: response.status.toString(),
             });
           }
         })
@@ -307,14 +308,14 @@ const ListButton = withStyles(styles)(
       bike: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        bikeNumber: PropTypes.string.isRequired,
+        bikeNumber: PropTypes.number.isRequired,
       }).isRequired,
       adminToken: PropTypes.string.isRequired,
       bikes: PropTypes.arrayOf(
         PropTypes.shape({
           _id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
-          bikeNumber: PropTypes.string.isRequired,
+          bikeNumber: PropTypes.number.isRequired,
         })
       ),
       lendings: PropTypes.arrayOf(
@@ -322,7 +323,7 @@ const ListButton = withStyles(styles)(
           _id: PropTypes.string.isRequired,
           lender: PropTypes.string.isRequired,
           bike_id: PropTypes.string.isRequired,
-          bikeNumber: PropTypes.string.isRequired,
+          bikeNumber: PropTypes.number.isRequired,
           time: PropTypes.shape({
             lent: PropTypes.string.isRequired,
             returned: PropTypes.string.isRequired,

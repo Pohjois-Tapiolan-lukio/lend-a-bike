@@ -65,24 +65,22 @@ class SubmitBike extends Component {
         bikeNumber: this.state.bikeNumber,
       }),
     })
-      .then(result => {
-        if (result.ok) {
-          result.json().then(data => {
-            if (result.status === 200) {
-              this.setState({
-                name: '',
-                bikeNumber: '',
-                open: false,
-                disableSubmit: false,
-                submitStatus: result.status.toString(),
-              });
-              this.props.reloadBikes();
-            }
+      .then(response => {
+        if (response.ok) {
+          response.json().then(data => {
+            this.setState({
+              name: '',
+              bikeNumber: '',
+              open: false,
+              disableSubmit: false,
+              submitStatus: -1,
+            });
+            this.props.reloadBikes();
           });
         } else {
           this.setState({
             disableSubmit: false,
-            submitStatus: result.status.toString(),
+            submitStatus: response.status.toString(),
           });
         }
       })

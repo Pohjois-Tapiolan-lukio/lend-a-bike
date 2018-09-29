@@ -36,12 +36,11 @@ router.get('/:bikeNumber', (req, res, _) => {
 
 router.post('/', auth, (req, res, _) => {
   Bike.findOne({
-    bikeNumber: req.body.bikeNumber
+    bikeNumber: req.body.bikeNumber,
   })
-    .then((conflictingBike) => {
-      console.log(conflictingBike);
-      if (conflictingBike !== null && conflictingBike.bikeNumber === req.body.bikeNumber) {
-        const e = new Error('BikeNumber is already claimed!');
+    .then(conflictingBike => {
+      if (conflictingBike !== null) {
+        const e = new Error('The bikeNumber is already claimed!');
         e.name = 'ConflictError';
         throw e;
       }
@@ -56,7 +55,7 @@ router.post('/', auth, (req, res, _) => {
     })
     .catch(error => {
       //console.log(error);
-      if (error.name === 'ValidationError') {
+      if (error.name === 'ValidationError' || error.name === 'CastError') {
         res.status(400).json({
           error,
         });

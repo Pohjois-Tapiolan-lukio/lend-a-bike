@@ -1,10 +1,10 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography, Tab, Toolbar } from '@material-ui/core';
 
 import AdminLogin from './Admin';
 import AdminDrawer from './AdminDrawer';
 import { withContext } from './DataContext';
-import { TitlebarBase } from './layout';
+import { TitlebarBase, BikeTabs } from './layouts';
 
 const styles = {
   titlebar: {
@@ -14,11 +14,20 @@ const styles = {
 
 const Titlebar = props => (
   <TitlebarBase>
-    {props.adminToken ? <AdminDrawer /> : ''}
-    <Typography variant="headline" color="inherit" style={styles.titlebar}>
-      Kampuspyörät
-    </Typography>
-    <AdminLogin />
+    <Toolbar>
+      {props.adminToken ? <AdminDrawer /> : ''}
+      <Typography variant="headline" color="inherit" style={styles.titlebar}>
+        Kampuspyörät
+      </Typography>
+      <AdminLogin />
+    </Toolbar>
+    <BikeTabs
+      value={props.bikeViewIndex}
+      onChange={(event, value) => props.changeBikeViewIndex(value)}
+    >
+      <Tab label="Palautetut pyörät" />
+      <Tab label="Lainatut pyörät" />
+    </BikeTabs>
   </TitlebarBase>
 );
 

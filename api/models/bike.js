@@ -7,7 +7,7 @@ const bikeSchema = mongoose.Schema({
     required: true,
   },
   bikeNumber: {
-    type: String,
+    type: Number,
     required: true,
   },
 });

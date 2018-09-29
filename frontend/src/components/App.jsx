@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Titlebar from './Titlebar';
-import Lend from './Lend';
+import { Lend } from './Lend/';
 import { Provider } from './DataContext';
 
 class App extends Component {
@@ -11,10 +11,12 @@ class App extends Component {
       adminToken: 'testtoken',
       bikes: [],
       lendings: [],
+      bikeViewIndex: 0,
     };
   }
 
   setToken = adminToken => this.setState({ adminToken });
+  changeBikeViewIndex = index => this.setState({ bikeViewIndex: index });
   reloadBikes = () => {
     return fetch('/api/bikes', {
       method: 'GET',
@@ -68,6 +70,7 @@ class App extends Component {
           setToken: this.setToken,
           reloadBikes: this.reloadBikes,
           reloadLendings: this.reloadLendings,
+          changeBikeViewIndex: this.changeBikeViewIndex,
         }}
       >
         <Titlebar />

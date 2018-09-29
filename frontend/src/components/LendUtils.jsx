@@ -63,16 +63,18 @@ export const LendBike = withStyles(styles)(
               }
             </DialogContentText>
             <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                autoFocus
-                className={props.classes.textField}
-                id="lender"
-                placeholder="Nimi"
-                value={props.lender}
-                onChange={props.handleChange('lender')}
-              />
+              <form onSubmit={props.submit}>
+                <TextField
+                  required
+                  fullWidth
+                  autoFocus
+                  className={props.classes.textField}
+                  id="lender"
+                  placeholder="Nimi"
+                  value={props.lender}
+                  onChange={props.handleChange('lender')}
+                />
+              </form>
             </Grid>
           </Grid>
         </DialogContent>
@@ -125,8 +127,12 @@ export const ReturnBike = withStyles(styles)(
       handleChange = key => event =>
         this.setState({ [key]: event.target.value });
 
-      returnBike = () => {
-        this.setState({ disableSubmit: true });
+      returnBike = event => {
+        event.preventDefault();
+        this.setState({
+          disableSubmit: true,
+          submitStatus: -1,
+        });
 
         fetch(`/api/lendings/return/${this.props.selectedBike._id}`, {
           method: 'PATCH',
@@ -196,16 +202,18 @@ export const ReturnBike = withStyles(styles)(
                     }
                   </DialogContentText>
                   <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      autoFocus
-                      className={classes.textField}
-                      id="lender"
-                      placeholder="Nimi"
-                      value={this.state.lender}
-                      onChange={this.handleChange('lender')}
-                    />
+                    <form onSubmit={this.returnBike}>
+                      <TextField
+                        required
+                        fullWidth
+                        autoFocus
+                        className={classes.textField}
+                        id="lender"
+                        placeholder="Nimi"
+                        value={this.state.lender}
+                        onChange={this.handleChange('lender')}
+                      />
+                    </form>
                   </Grid>
                 </Grid>
               </DialogContent>

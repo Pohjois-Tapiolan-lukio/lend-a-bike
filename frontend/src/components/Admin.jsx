@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from './DataContext';
-import { Add, PowerSettingsNew } from '@material-ui/icons';
+import { PowerSettingsNew } from '@material-ui/icons';
 
 const styles = theme => ({
   Button: {
@@ -28,6 +28,9 @@ const styles = theme => ({
   close: {
     width: theme.spacing.unit * 4,
     height: theme.spacing.unit * 4,
+  },
+  textField: {
+    marginTop: theme.spacing.unit,
   },
 });
 
@@ -95,7 +98,7 @@ class AdminLogin extends Component {
     return (
       <Fragment>
         <Button onClick={this.openDialog} color="inherit">
-          {this.props.adminToken ? 'Logged in' : 'Admin login'}
+          {this.props.adminToken ? 'Kirjautunut' : 'Kirjaudu'}
         </Button>
         <Dialog
           open={this.state.open}
@@ -115,7 +118,7 @@ class AdminLogin extends Component {
                 <TextField
                   required
                   fullWidth
-                  autoFocus
+                  autoFocus={this.state.name ? false : true}
                   className={classes.textField}
                   id="name"
                   placeholder="Nimi"
@@ -124,16 +127,19 @@ class AdminLogin extends Component {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  type="password"
-                  className={classes.textField}
-                  id="password"
-                  placeholder="Salasana"
-                  value={this.state.bikeNumber}
-                  onChange={this.handleChange('password')}
-                />
+                <form onSubmit={this.handleSubmit}>
+                  <TextField
+                    required
+                    fullWidth
+                    autoFocus={this.state.name ? true : false}
+                    type="password"
+                    className={classes.textField}
+                    id="password"
+                    placeholder="Salasana"
+                    value={this.state.bikeNumber}
+                    onChange={this.handleChange('password')}
+                  />
+                </form>
               </Grid>
             </Grid>
           </DialogContent>

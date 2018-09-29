@@ -1,9 +1,10 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
 import AdminLogin from './Admin';
 import AdminDrawer from './AdminDrawer';
 import { withContext } from './DataContext';
+import { TitlebarBase } from './layout';
 
 const styles = {
   titlebar: {
@@ -12,15 +13,13 @@ const styles = {
 };
 
 const Titlebar = props => (
-  <AppBar position="fixed">
-    <Toolbar>
-      {props.adminToken ? <AdminDrawer /> : ''}
-      <Typography variant="headline" color="inherit" style={styles.titlebar}>
-        Kampuspyörät
-      </Typography>
-      <AdminLogin />
-    </Toolbar>
-  </AppBar>
+  <TitlebarBase>
+    {props.adminToken ? <AdminDrawer /> : ''}
+    <Typography variant="headline" color="inherit" style={styles.titlebar}>
+      Kampuspyörät
+    </Typography>
+    <AdminLogin />
+  </TitlebarBase>
 );
 
 export default withContext(Titlebar);

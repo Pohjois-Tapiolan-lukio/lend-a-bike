@@ -43,9 +43,11 @@ class SubmitBike extends Component {
   closeDialog = () => this.setState({ open: false });
   openDialog = () => this.setState({ open: true });
   handleChange = key => event => this.setState({ [key]: event.target.value });
-  submitBike = () => {
+  submitBike = event => {
+    event.preventDefault();
     this.setState({
       disableSubmit: true,
+      submitStatus: -1,
     });
 
     // TODO useless ternary
@@ -122,7 +124,7 @@ class SubmitBike extends Component {
                 <TextField
                   required
                   fullWidth
-                  autoFocus
+                  autoFocus={this.state.name ? false : true}
                   className={classes.textField}
                   id="name"
                   placeholder="Pyörän nimi"
@@ -131,15 +133,18 @@ class SubmitBike extends Component {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  className={classes.textField}
-                  id="bikeNumber"
-                  placeholder="Pyörän ID"
-                  value={this.state.bikeNumber}
-                  onChange={this.handleChange('bikeNumber')}
-                />
+                <form onSubmit={this.submitBike}>
+                  <TextField
+                    required
+                    fullWidth
+                    autoFocus={this.state.name ? true : false}
+                    className={classes.textField}
+                    id="bikeNumber"
+                    placeholder="Pyörän ID"
+                    value={this.state.bikeNumber}
+                    onChange={this.handleChange('bikeNumber')}
+                  />
+                </form>
               </Grid>
             </Grid>
           </DialogContent>

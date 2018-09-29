@@ -79,8 +79,12 @@ class Lend extends Component {
       [key]: event.target.value,
     });
   };
-  submit = () => {
-    this.setState({ disableSubmit: true });
+  submit = event => {
+    event.preventDefault();
+    this.setState({
+      disableSubmit: true,
+      submitStatus: -1,
+    });
     fetch('/api/lendings', {
       method: 'POST',
       headers: {
@@ -202,6 +206,8 @@ class Lend extends Component {
         </Grid>
         <div className={classes.fabs}>
           {this.state.selectedBike !== '' &&
+          // TODO This looks very confusing
+          // must be clearer
           this.filterLendingsByBike(this.state.selectedBike)[0] ? (
             <ReturnBike
               selectedBike={this.state.selectedBike}

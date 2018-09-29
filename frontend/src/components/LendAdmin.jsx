@@ -172,8 +172,12 @@ const EditButton = withStyles(styles)(
       });
     handleChange = key => event => this.setState({ [key]: event.target.value });
 
-    patchBike = () => {
-      this.setState({ disableSubmit: true });
+    patchBike = event => {
+      event.preventDefault();
+      this.setState({
+        disableSubmit: true,
+        submitStatus: -1,
+      });
 
       const Authorization = this.props.adminToken
         ? `Bearer ${this.props.adminToken}`
@@ -239,27 +243,31 @@ const EditButton = withStyles(styles)(
                   }
                 </DialogContentText>
                 <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    autoFocus
-                    className={classes.textField}
-                    id="name"
-                    placeholder="Pyörän nimi"
-                    value={this.state.name}
-                    onChange={this.handleChange('name')}
-                  />
+                  <form onSubmit={this.patchBike}>
+                    <TextField
+                      required
+                      fullWidth
+                      autoFocus
+                      className={classes.textField}
+                      id="name"
+                      placeholder="Pyörän nimi"
+                      value={this.state.name}
+                      onChange={this.handleChange('name')}
+                    />
+                  </form>
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    className={classes.textField}
-                    id="bikeNumber"
-                    placeholder="Pyörän ID"
-                    value={this.state.bikeNumber}
-                    onChange={this.handleChange('bikeNumber')}
-                  />
+                  <form onSubmit={this.patchBike}>
+                    <TextField
+                      required
+                      fullWidth
+                      className={classes.textField}
+                      id="bikeNumber"
+                      placeholder="Pyörän ID"
+                      value={this.state.bikeNumber}
+                      onChange={this.handleChange('bikeNumber')}
+                    />
+                  </form>
                 </Grid>
               </Grid>
             </DialogContent>

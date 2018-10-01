@@ -26,7 +26,6 @@ const styles = theme => ({
   },
   container: {
     display: 'flex',
-    minHeight: 'fill-available',
     flexDirection: 'column',
   },
   spacer: {

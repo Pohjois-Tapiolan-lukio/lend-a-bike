@@ -1,21 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 
 import { LendBike, ReturnBike, BikeViews } from '.';
 import { withContext } from '../DataContext';
-
-// TODO create a layout that integrates styles
-const styles = theme => ({
-  fabs: {
-    bottom: theme.spacing.unit * 2,
-    right: theme.spacing.unit * 2,
-    position: 'fixed',
-  },
-  extendedIcon: {
-    marginRight: theme.spacing.unit,
-  },
-});
 
 class Lend extends Component {
   constructor(props) {
@@ -44,41 +31,30 @@ class Lend extends Component {
       selectedBike: this.state.selectedBike === bike ? null : bike,
     });
   };
-
-  // TODO create external methods for filtering lendings
-  filterLendingsByBike = bike =>
-    this.props.lendings.filter(
-      lending =>
-        lending.bike_id === bike._id &&
-        new Date(lending.time.returned).getTime() === new Date(0).getTime()
-    );
+  clearSelection = () => this.setState({ selectedBike: null });
 
   render() {
-    const { classes } = this.props;
     return (
       <Fragment>
         <BikeViews
           handleSelect={this.handleSelect}
           selectedBike={this.state.selectedBike}
+          clearSelection={this.clearSelection}
         />
 
-        <div className={classes.fabs}>
-          {this.state.selectedBike &&
-          // TODO This looks very confusing
-          // must be clearer
-          //  - yes it will be removed
-          this.filterLendingsByBike(this.state.selectedBike)[0] ? (
-            <ReturnBike selectedBike={this.state.selectedBike} />
-          ) : (
-            // TODO FIX THIS MESS: OK ITS FIXED NOW!
-            <LendBike selectedBike={this.state.selectedBike} />
-          )}
-        </div>
+        <LendBike
+          selectedBike={this.state.selectedBike}
+          clearSelection={this.clearSelection}
+        />
+        <ReturnBike
+          selectedBike={this.state.selectedBike}
+          clearSelection={this.clearSelection}
+        />
       </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(withContext(Lend));
+export default withContext(Lend);
 
 // vim: et ts=2 sw=2 :

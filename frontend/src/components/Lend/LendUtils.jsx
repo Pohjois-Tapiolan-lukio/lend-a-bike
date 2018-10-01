@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import {
   Button,
   Grid,
@@ -9,18 +9,29 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  Zoom,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { DirectionsBike, Refresh } from '@material-ui/icons';
 
 import { withContext } from '../DataContext';
-import { bikeType } from '../../utils';
+import {
+  getLentBikes,
+  getAvailableBikes,
+  bikeType,
+  lendingType,
+} from '../../utils';
 
 const styles = theme => ({
+  //fab: {
+  //  marginLeft: theme.spacing.unit,
+  //  background: 'linear-gradient(45deg, #c51162 30%, #f4701d 90%)',
+  //  color: 'white',
+  //},
   fab: {
-    marginLeft: theme.spacing.unit,
-    background: 'linear-gradient(45deg, #c51162 30%, #f4701d 90%)',
-    color: 'white',
+    position: 'absolute',
+    bottom: theme.spacing.unit * 2,
+    right: theme.spacing.unit * 2,
   },
   extendedIcon: {
     marginRight: theme.spacing.unit,
@@ -30,6 +41,32 @@ const styles = theme => ({
   },
 });
 
+const FabZoom = withStyles(styles, { withTheme: true })(
+  withContext(props => {
+    const { index, theme } = props;
+    const transitionDuration = {
+      enter: theme.transitions.duration.enteringScreen,
+      exit: theme.transitions.duration.leavingScreen,
+    };
+
+    return (
+      <Zoom
+        in={props.bikeViewIndex === index}
+        timeout={transitionDuration}
+        style={{
+          transitionDelay: `${
+            props.bikeViewIndex === index ? transitionDuration.exit : 0
+          }ms`,
+        }}
+        unmountOnExit
+      >
+        {props.children}
+      </Zoom>
+    );
+  })
+);
+
+// TODO create class fabs with subclasses
 export const LendBike = withStyles(styles)(
   withContext(
     class extends Component {
@@ -44,6 +81,9 @@ export const LendBike = withStyles(styles)(
       }
       static propTypes = {
         selectedBike: bikeType,
+        bikes: PropTypes.arrayOf(bikeType).isRequired,
+        lendings: PropTypes.arrayOf(lendingType).isRequired,
+        clearSelection: PropTypes.func.isRequired,
       };
 
       handleChange = key => event => {
@@ -52,6 +92,7 @@ export const LendBike = withStyles(styles)(
         });
       };
       submit = event => {
+        if (this.props.selectedBike === null) return;
         event.preventDefault();
         this.setState({
           disableSubmit: true,
@@ -74,18 +115,23 @@ export const LendBike = withStyles(styles)(
               this.setState({
                 disableSubmit: false,
                 lender: '',
-                selectedBike: null,
                 submitStatus: -1,
                 dialogOpen: false,
               });
+              this.props.reloadLendings();
+              this.props.clearSelection();
             } else {
+              // If you try to lend a bike that is already in use
               this.setState({
                 disableSubmit: false,
+                dialogOpen: false,
+                lender: '',
                 submitStatus: response.status.toString(),
               });
+              this.props.reloadLendings();
+              this.props.clearSelection();
             }
           })
-          .then(this.props.reloadLendings)
           .catch(error => {
             console.log(error);
           });
@@ -100,17 +146,43 @@ export const LendBike = withStyles(styles)(
         });
       render() {
         const { classes } = this.props;
+        const availableBikes = getAvailableBikes(
+          this.props.bikes,
+          this.props.lendings
+        );
+        const disabled = !(
+          availableBikes.length &&
+          this.props.selectedBike &&
+          availableBikes.some(
+            availableBike => availableBike._id === this.props.selectedBike._id
+          )
+        );
+
         return (
           <Fragment>
-            <Button
-              className={classes.fab}
-              variant="extendedFab"
-              disabled={this.props.selectedBike === null}
-              onClick={this.openDialog}
-            >
-              <DirectionsBike className={classes.extendedIcon} />
-              Lainaa
-            </Button>
+            {/*
+              <Button
+                className={classes.fab}
+                variant="extendedFab"
+                disabled={this.props.selectedBike === null}
+                onClick={this.openDialog}
+              >
+                <DirectionsBike className={classes.extendedIcon} />
+                Lainaa
+              </Button>
+              */}
+
+            <FabZoom index={0}>
+              <Button
+                className={classes.fab}
+                color="primary"
+                variant="fab"
+                disabled={disabled}
+                onClick={this.openDialog}
+              >
+                <DirectionsBike />
+              </Button>
+            </FabZoom>
             <Dialog
               open={this.state.dialogOpen}
               onClose={this.closeDialog}
@@ -185,7 +257,10 @@ export const ReturnBike = withStyles(styles)(
         };
       }
       static propTypes = {
-        selectedBike: bikeType.isRequired,
+        selectedBike: bikeType,
+        bikes: PropTypes.arrayOf(bikeType).isRequired,
+        lendings: PropTypes.arrayOf(lendingType).isRequired,
+        clearSelection: PropTypes.func.isRequired,
       };
 
       openDialog = () => this.setState({ dialogOpen: true });
@@ -194,6 +269,7 @@ export const ReturnBike = withStyles(styles)(
         this.setState({ [key]: event.target.value });
 
       returnBike = event => {
+        if (this.props.selectedBike === null) return;
         event.preventDefault();
         this.setState({
           disableSubmit: true,
@@ -219,31 +295,66 @@ export const ReturnBike = withStyles(styles)(
                   submitStatus: -1,
                 });
               });
+              this.props.reloadLendings();
+              this.props.clearSelection();
             } else {
+              if (response.status === 400) {
+                // The bike is not lent
+                this.setState({
+                  lender: '',
+                  dialogOpen: false,
+                  disableSubmit: false,
+                  submitStatus: -1,
+                });
+                this.props.reloadLendings();
+                this.props.clearSelection();
+                return;
+              }
               this.setState({
                 disableSubmit: false,
                 submitStatus: response.status.toString(),
               });
             }
           })
-          .then(this.props.reloadLendings)
           .catch(console.error);
       };
 
       render() {
         const { classes } = this.props;
+        const lentBikes = getLentBikes(this.props.bikes, this.props.lendings);
+        const disabled = !(
+          lentBikes.length &&
+          this.props.selectedBike &&
+          lentBikes.some(
+            lentBike => lentBike._id === this.props.selectedBike._id
+          )
+        );
+
         return (
           <Fragment>
-            <Button
-              className={classes.fab}
-              variant="extendedFab"
-              onClick={this.openDialog}
-            >
-              <Refresh
-                className={`${classes.extendedIcon} ${classes.refreshIcon}`}
-              />
-              Palauta
-            </Button>
+            {/*
+              <Button
+                className={classes.fab}
+                variant="extendedFab"
+                onClick={this.openDialog}
+              >
+                <Refresh
+                  className={`${classes.extendedIcon} ${classes.refreshIcon}`}
+                />
+                Palauta
+              </Button>
+              */}
+            <FabZoom index={1}>
+              <Button
+                className={classes.fab}
+                color="secondary"
+                variant="fab"
+                disabled={disabled}
+                onClick={this.openDialog}
+              >
+                <Refresh className={classes.refreshIcon} />
+              </Button>
+            </FabZoom>
             <Dialog
               open={this.state.dialogOpen}
               onClose={this.closeDialog}
@@ -260,6 +371,7 @@ export const ReturnBike = withStyles(styles)(
                       {
                         '200': 'Pyörä palautettu',
                         '400': 'Huono pyyntö (400)',
+                        '401': 'Väärä nimi (401)',
                       }[this.state.submitStatus]
                     }
                   </DialogContentText>

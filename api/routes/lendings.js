@@ -7,7 +7,6 @@ const auth = require('../auth');
 const router = express.Router();
 
 router.get('/', (req, res, _) => {
-  console.log(req.query);
   Lending.find()
     .select('_id lender bikeNumber bike_id time')
     .then(lendings => {
@@ -58,7 +57,7 @@ router.post('/', (req, res, _) => {
       }
 
       const lendingsInUse = lendings.filter(lending => {
-        if (lending.bikeNumber === new String(req.body.bikeNumber).valueOf()) {
+        if (lending.bikeNumber === req.body.bikeNumber) {
           // Epoch 0 means that the bike is in use
           if (
             new Date(lending.time.returned).getTime() === new Date(0).getTime()
@@ -141,8 +140,8 @@ router.patch('/return/:bike_id', (req, res) => {
       }
       const lending = lendings[0];
       if (req.body.lender !== lending.lender) {
-        return res.status(400).json({
-          message: 'Wrong lender',
+        return res.status(401).json({
+          message: 'Wrong credentials',
         });
       }
       Lending.update(lending, {

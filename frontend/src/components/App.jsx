@@ -16,7 +16,11 @@ class App extends Component {
   }
 
   setToken = adminToken => this.setState({ adminToken });
-  changeBikeViewIndex = index => this.setState({ bikeViewIndex: index });
+  changeBikeViewIndex = index => {
+    this.reloadLendings();
+    this.reloadBikes();
+    this.setState({ bikeViewIndex: index });
+  };
   reloadBikes = () => {
     return fetch('/api/bikes', {
       method: 'GET',

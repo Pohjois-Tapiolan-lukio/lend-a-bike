@@ -1,6 +1,6 @@
-import { lendingType, bikeType } from './modelTypes.js';
+import { lendingType, bikeType, breakdownType } from './modelTypes.js';
 
-export { lendingType, bikeType };
+export { lendingType, bikeType, breakdownType };
 
 const byTimeLent = (a, b) =>
   Math.sign(new Date(a.time.lent).getTime() - new Date(b.time.lent).getTime());

@@ -11,8 +11,14 @@ class App extends Component {
       adminToken: 'testtoken',
       bikes: [],
       lendings: [],
+      breakdowns: [],
       bikeViewIndex: 0,
     };
+  }
+  componentDidMount() {
+    this.reloadBikes();
+    this.reloadLendings();
+    this.reloadBreakdowns();
   }
 
   setToken = adminToken => this.setState({ adminToken });
@@ -52,19 +58,20 @@ class App extends Component {
         });
       })
       .catch(error => console.log);
-    //    fetch('/api/lendings?latest=true', {
-    //      method: 'GET',
-    //      headers: {
-    //        'Content-Type': 'application/json',
-    //      },
-    //    })
-    //      .then(result => result.json())
-    //      .then(result => {
-    //        this.setState({
-    //          latestLendings: result,
-    //        });
-    //      })
-    //      .catch(error => console.log);
+  };
+  reloadBreakdowns = () => {
+    return fetch('/api/breakdowns', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(response => {
+        this.setState({
+          breakdowns: response,
+        });
+      });
   };
   render() {
     return (

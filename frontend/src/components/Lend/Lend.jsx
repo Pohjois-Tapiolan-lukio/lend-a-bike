@@ -14,6 +14,7 @@ class Lend extends Component {
   static propTypes = {
     adminToken: PropTypes.string,
     reloadBikes: PropTypes.func.isRequired,
+    // TODO use template
     bikes: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string.isRequired,
@@ -21,10 +22,6 @@ class Lend extends Component {
         bikeNumber: PropTypes.number.isRequired,
       })
     ),
-  };
-  componentDidMount = () => {
-    this.props.reloadBikes();
-    this.props.reloadLendings();
   };
   handleSelect = bike => () => {
     this.setState({

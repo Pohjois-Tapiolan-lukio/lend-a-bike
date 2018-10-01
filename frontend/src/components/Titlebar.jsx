@@ -1,8 +1,7 @@
 import React from 'react';
 import { Typography, Tab, Toolbar } from '@material-ui/core';
 
-import AdminLogin from './Admin';
-import AdminDrawer from './AdminDrawer';
+import { AdminDrawer, AdminLogin } from './Admin';
 import { withContext } from './DataContext';
 import { TitlebarBase, BikeTabs } from './layouts';
 

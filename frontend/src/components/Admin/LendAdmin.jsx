@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
+  IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,7 +20,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Delete, Edit, ViewList } from '@material-ui/icons';
 import { red, grey as gray } from '@material-ui/core/colors';
 
-import { withContext } from './DataContext';
+import { withContext } from '../DataContext';
 
 const styles = theme => ({
   cardAction: {
@@ -133,13 +134,13 @@ const DeleteButton = withStyles(styles)(
     render() {
       const { classes } = this.props;
       return (
-        <Button onClick={this.handleClick}>
-          {this.state.pressedOnce ? (
-            <Delete className={`${classes.deleteConfirm} ${classes.delete}`} />
-          ) : (
-            <Delete className={`${classes.delete}`} />
-          )}
-        </Button>
+        <IconButton onClick={this.handleClick}>
+          <Delete
+            className={`${classes.delete} ${
+              this.state.pressedOnce ? classes.deleteConfirm : ''
+            }`}
+          />
+        </IconButton>
       );
     }
   }
@@ -222,9 +223,9 @@ const EditButton = withStyles(styles)(
       const { classes } = this.props;
       return (
         <Fragment>
-          <Button onClick={this.openDialog}>
+          <IconButton onClick={this.openDialog}>
             <Edit />
-          </Button>
+          </IconButton>
           <Dialog
             open={this.state.dialogOpen}
             onClose={this.closeDialog}
@@ -337,11 +338,14 @@ const ListButton = withStyles(styles)(
 
     render() {
       const { bike, lendings, classes } = this.props;
+      const bikeLendings = lendings.filter(
+        lending => lending.bikeNumber === bike.bikeNumber
+      );
       return (
         <Fragment>
-          <Button onClick={this.openDialog}>
+          <IconButton onClick={this.openDialog}>
             <ViewList />
-          </Button>
+          </IconButton>
           <Dialog
             open={this.state.dialogOpen}
             onClose={this.closeDialog}
@@ -350,34 +354,28 @@ const ListButton = withStyles(styles)(
             <DialogTitle id="alert-dialog-title">Pyörän lainaukset</DialogTitle>
             <DialogContent className={classes.listDialogContent}>
               <List className={classes.listList}>
-                {lendings.length ? (
-                  []
-                    .concat(lendings)
-                    .reverse()
-                    .filter(lending => lending.bike_id === bike._id)
-                    .map(lending => (
-                      <ListItem
-                        key={lending._id}
-                        className={`${classes.listItem} ${classes.test}`}
-                      >
-                        <ListItemText
-                          className={classes.listText}
-                          primary={lending.lender}
-                          secondary={new Date(lending.time.lent).toLocaleString(
-                            'fi-FI'
-                          )}
-                        />
-                        {/*
+                {bikeLendings.length ? (
+                  bikeLendings.reverse().map(lending => (
+                    <ListItem key={lending._id}>
+                      <ListItemText
+                        className={classes.listText}
+                        primary={lending.lender}
+                        secondary={new Date(lending.time.lent).toLocaleString(
+                          'fi-FI'
+                        )}
+                      />
+                      {/*
                           <ListItemSecondaryAction>
                             <IconButton aria-label="Delete">
                               <Delete />
                             </IconButton>
                           </ListItemSecondaryAction>
                         */}
-                      </ListItem>
-                    ))
+                    </ListItem>
+                  ))
                 ) : (
-                  <ListItem className={`${classes.listItem} ${classes.test}`}>
+                  <ListItem>
+                    {console.log()}
                     <ListItemText
                       className={classes.listText}
                       primary="Ei lainauksia"

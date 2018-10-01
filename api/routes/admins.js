@@ -63,26 +63,23 @@ router.post('/login', (req, res, _) => {
         .then(authorized => {
           if (!authorized) throw new Error('Unauthorized');
 
-          const lastsForever = req.query.lastsForever === 1;
+          const lastsForever = req.query.lastsForever === '1';
           const token = jwt.sign(
             {
               name: admin.name,
               userId: admin._id,
             },
             JWT_KEY,
-            lastsForever
-              ? {
-                  ignoreExpiration: true,
-                }
-              : {
-                  expiresIn: '1h',
-                }
+            {
+              expiresIn: lastsForever ? '365d' : '1h',
+            }
           );
 
           res.status(200).json({
             token,
             userId: admin._id,
             message: 'Authentication successful',
+            lastsForever,
           });
         });
     })

@@ -17,4 +17,15 @@ export const lendingType = PropTypes.shape({
   }),
 });
 
+export const breakdownType = PropTypes.shape({
+  _id: PropTypes.string.isRequired,
+  reason: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  bikeNumber: PropTypes.number.isRequired,
+  time: PropTypes.shape({
+    fixed: PropTypes.string.isRequired,
+    broken: PropTypes.string.isRequired,
+  }),
+});
+
 // vim: et ts=2 sw=2 :

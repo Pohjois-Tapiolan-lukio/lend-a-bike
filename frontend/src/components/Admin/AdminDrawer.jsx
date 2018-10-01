@@ -13,9 +13,9 @@ import {
 } from '@material-ui/core';
 import { Menu, Security } from '@material-ui/icons';
 
-import SubmitBike from './SubmitBike';
-import { AdminLogout } from './Admin';
-import { withContext } from './DataContext';
+import SubmitBike from '../SubmitBike';
+import { AdminLogout, Breakdowns } from '.';
+import { withContext } from '../DataContext';
 
 const styles = theme => ({
   list: {
@@ -93,6 +93,9 @@ const AdminDrawer = withStyles(styles)(
                     reloadBikes={this.props.reloadBikes}
                     adminToken={this.props.adminToken}
                   />
+                  <Divider />
+                  <Breakdowns />
+
                   <div className={classes.spacer} />
                   <Divider />
                   <AdminLogout />

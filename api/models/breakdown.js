@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const breakdownSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   reason: {
-    type: String;
+    type: String,
     required: true,
   },
   description: {

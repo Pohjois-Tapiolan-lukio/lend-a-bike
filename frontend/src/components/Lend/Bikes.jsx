@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
-import { BikeCardButtons } from '../LendAdmin';
+import { BikeCardButtons } from '../Admin';
 import { withContext } from '../DataContext';
 import {
   getLentBikes,
@@ -200,6 +200,7 @@ export const BikeViews = withStyles(styles)(
         return (
           <SwipeableViews
             axis="x"
+            disableLazyLoading
             index={this.props.bikeViewIndex}
             onChangeIndex={this.props.changeBikeViewIndex}
             slideStyle={{

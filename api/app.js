@@ -8,6 +8,7 @@ const swaggerDocument = require('./swagger.json');
 const routeLendings = require('./routes/lendings');
 const routeBikes = require('./routes/bikes');
 const routeAdmins = require('./routes/admins');
+const routeBreakdowns = require('./routes/breakdowns');
 
 const app = express();
 const PREFIX = process.env.API_ROUTE_PREFIX;
@@ -22,6 +23,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(`${PREFIX}/lendings`, routeLendings);
 app.use(`${PREFIX}/bikes`, routeBikes);
 app.use(`${PREFIX}/admins`, routeAdmins);
+app.use(`${PREFIX}/breakdowns`, routeBreakdowns);
 
 // Throw a new error when the route is not found
 app.use((req, res, next) => {

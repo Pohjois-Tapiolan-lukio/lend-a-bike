@@ -29,13 +29,13 @@ const styles = theme => ({
     [theme.breakpoints.up('sm')]: {
       marginTop: 64 + 48 + theme.spacing.unit,
     },
-    width: `calc(100% - 8px)`,
-    margin: 4,
+    width: `calc(100% - ${2 * theme.spacing.unit}px)`,
+    margin: theme.spacing.unit,
   },
   card: {
     transition: `box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
       background 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms`,
-    margin: 'auto',
+    // margin: 'auto',
   },
   selected: {
     background: '#ddd',
@@ -65,7 +65,7 @@ const BikeContent = props => (
   </CardContent>
 );
 
-export const Bikes = withStyles(styles)(
+export const Bikes = withStyles(styles, { withTheme: true })(
   withContext(
     class extends Component {
       static propTypes = {
@@ -80,13 +80,17 @@ export const Bikes = withStyles(styles)(
         available: false,
       };
       render() {
-        const { classes, selectedBike } = this.props;
+        const { classes, selectedBike, theme } = this.props;
         const bikes = this.props.available
           ? getAvailableBikes(this.props.bikes, this.props.lendings)
           : getLentBikes(this.props.bikes, this.props.lendings);
 
         return (
-          <Grid container className={classes.cardgrid} spacing={8}>
+          <Grid
+            container
+            className={classes.cardgrid}
+            spacing={2 * theme.spacing.unit}
+          >
             {bikes.map(bike => (
               <Grid item xs={12} sm={6} key={bike._id}>
                 <Card

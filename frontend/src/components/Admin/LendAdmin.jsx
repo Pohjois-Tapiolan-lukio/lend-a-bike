@@ -17,10 +17,11 @@ import {
   // IconButton,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Delete, Edit, ViewList } from '@material-ui/icons';
+import { Delete, Edit, ViewList, BrokenImage } from '@material-ui/icons';
 import { red, grey as gray } from '@material-ui/core/colors';
 
 import { withContext } from '../DataContext';
+import { bikeType, lendingType, breakdownType } from '../../utils';
 
 const styles = theme => ({
   cardAction: {
@@ -49,6 +50,10 @@ const styles = theme => ({
       background: gray[100],
     },
   },
+  cardButton: {
+    marginTop: -theme.spacing.unit,
+    marginBottom: -theme.spacing.unit,
+  },
 });
 
 export const BikeCardButtons = withStyles(styles)(
@@ -57,6 +62,7 @@ export const BikeCardButtons = withStyles(styles)(
       <DeleteButton {...props} />
       <EditButton {...props} />
       <ListButton {...{ ...props, styles }} />
+      <BreakdownButton {...props} />
     </Fragment>
   ))
 );
@@ -134,7 +140,7 @@ const DeleteButton = withStyles(styles)(
     render() {
       const { classes } = this.props;
       return (
-        <IconButton onClick={this.handleClick}>
+        <IconButton onClick={this.handleClick} className={classes.cardButton}>
           <Delete
             className={`${classes.delete} ${
               this.state.pressedOnce ? classes.deleteConfirm : ''
@@ -223,7 +229,7 @@ const EditButton = withStyles(styles)(
       const { classes } = this.props;
       return (
         <Fragment>
-          <IconButton onClick={this.openDialog}>
+          <IconButton onClick={this.openDialog} className={classes.cardButton}>
             <Edit />
           </IconButton>
           <Dialog
@@ -343,7 +349,7 @@ const ListButton = withStyles(styles)(
       );
       return (
         <Fragment>
-          <IconButton onClick={this.openDialog}>
+          <IconButton onClick={this.openDialog} className={classes.cardButton}>
             <ViewList />
           </IconButton>
           <Dialog
@@ -375,7 +381,6 @@ const ListButton = withStyles(styles)(
                   ))
                 ) : (
                   <ListItem>
-                    {console.log()}
                     <ListItemText
                       className={classes.listText}
                       primary="Ei lainauksia"
@@ -390,4 +395,156 @@ const ListButton = withStyles(styles)(
     }
   }
 );
+
+const BreakdownButton = withStyles(styles)(
+  class extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        dialogOpen: false,
+        disableSubmit: false,
+        submitStatus: '',
+        reason: '',
+        description: '',
+      };
+    }
+    static propTypes = {
+      classes: PropTypes.object.isRequired,
+      bike: bikeType.isRequired,
+      adminToken: PropTypes.string.isRequired,
+      reloadBreakdowns: PropTypes.func.isRequired,
+    };
+
+    closeDialog = () => this.setState({ dialogOpen: false });
+    openDialog = () =>
+      this.setState({
+        dialogOpen: true,
+        name: this.props.bike.name,
+        bikeNumber: this.props.bike.bikeNumber,
+      });
+    handleChange = key => event => this.setState({ [key]: event.target.value });
+    createBreakdown = event => {
+      event.preventDefault();
+      this.setState({
+        disableSubmit: true,
+        submitStatus: -1,
+      });
+
+      const Authorization = this.props.adminToken
+        ? `Bearer ${this.props.adminToken}`
+        : undefined;
+      fetch('/api/breakdowns/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization,
+        },
+        body: JSON.stringify({
+          bikeNumber: this.props.bike.bikeNumber,
+          reason: this.state.reason,
+          description: this.state.description,
+        }),
+      })
+        .then(response => {
+          if (response.ok) {
+            response.json().then(data => {
+              this.setState({
+                reason: '',
+                description: '',
+                dialogOpen: false,
+                disableSubmit: false,
+                submitStatus: -1,
+              });
+              this.props.reloadBreakdowns();
+            });
+          } else {
+            this.setState({
+              disableSubmit: false,
+              submitStatus: response.status.toString(),
+            });
+          }
+        })
+        .catch(console.error);
+    };
+
+    render() {
+      const { classes } = this.props;
+      return (
+        <Fragment>
+          <IconButton onClick={this.openDialog} className={classes.cardButton}>
+            <BrokenImage />
+          </IconButton>
+          <Dialog
+            open={this.state.dialogOpen}
+            onClose={this.closeDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth
+          >
+            <DialogTitle id="alert-dialog-title">Lisää hajoaminen</DialogTitle>
+            <DialogContent>
+              <Grid container>
+                <DialogContentText id="alert-dialog-description">
+                  {
+                    {
+                      '200': 'Pyörä muokattu',
+                      '403': 'Ei oikeutta (403)',
+                    }[this.state.submitStatus]
+                  }
+                </DialogContentText>
+                <Grid item xs={12}>
+                  <form onSubmit={this.createBreakdown}>
+                    <TextField
+                      required
+                      fullWidth
+                      autoFocus
+                      className={classes.textField}
+                      id="reason"
+                      placeholder="Hajoamisen syy"
+                      value={this.state.reason}
+                      onChange={this.handleChange('reason')}
+                    />
+                  </form>
+                </Grid>
+                <Grid item xs={12}>
+                  <form onSubmit={this.createBreakdown}>
+                    <TextField
+                      required
+                      fullWidth
+                      multiline
+                      rows="2"
+                      rowsMax="6"
+                      className={classes.textField}
+                      id="description"
+                      placeholder="Lisätietoa"
+                      value={this.state.description}
+                      onChange={this.handleChange('description')}
+                    />
+                  </form>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={this.closeDialog}
+                variant="contained"
+                color="secondary"
+              >
+                Kumoa
+              </Button>
+              <Button
+                onClick={this.createBreakdown}
+                color="primary"
+                disabled={this.state.disableSubmit}
+              >
+                Lisää
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Fragment>
+      );
+    }
+  }
+);
+
 // vim: et ts=2 sw=2 :

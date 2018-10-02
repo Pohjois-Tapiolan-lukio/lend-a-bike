@@ -82,6 +82,7 @@ class App extends Component {
           reloadBikes: this.reloadBikes,
           reloadLendings: this.reloadLendings,
           changeBikeViewIndex: this.changeBikeViewIndex,
+          reloadBreakdowns: this.reloadBreakdowns,
         }}
       >
         <Titlebar />

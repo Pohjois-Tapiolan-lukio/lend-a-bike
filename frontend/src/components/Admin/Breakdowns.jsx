@@ -29,7 +29,7 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../DataContext';
 import { Build, Close, ExpandMore, Add } from '@material-ui/icons';
-import { grey as gray } from '@material-ui/core/colors';
+import { red, green, grey as gray } from '@material-ui/core/colors';
 
 import {
   lendingType,
@@ -46,7 +46,9 @@ const styles = theme => ({
     position: 'relative',
   },
   listList: {
-    '&>div:nth-child(odd)': {
+    height: '100%',
+    overflow: 'auto',
+    '&>li:nth-child(odd)>div': {
       background: gray[100],
     },
   },
@@ -57,10 +59,23 @@ const styles = theme => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
+  },
   fab: {
     position: 'fixed',
     bottom: theme.spacing.unit * 2,
     right: theme.spacing.unit * 2,
+  },
+  unfixed: {
+    color: red[700],
+  },
+  fixed: {
+    color: green[500],
+  },
+  column: {
+    flexBasis: '33.33%',
   },
 });
 
@@ -109,7 +124,6 @@ export const Breakdowns = withStyles(styles)(
       };
       render() {
         const { classes, bikes, breakdowns } = this.props;
-        const bull = '\u2022';
 
         return (
           <Fragment>
@@ -143,7 +157,7 @@ export const Breakdowns = withStyles(styles)(
                   </IconButton>
                 </Toolbar>
               </AppBar>
-              <List className={classes.listList}>
+              <List dense className={classes.listList}>
                 {[]
                   .concat(breakdowns)
                   .reverse()
@@ -151,57 +165,77 @@ export const Breakdowns = withStyles(styles)(
                     const bikeByNumber = bikes.filter(
                       bike => bike.bikeNumber === breakdown.bikeNumber
                     )[0];
-                    const bikeIsFixed =
-                      getBrokenBikes(bikes, breakdowns).filter(
-                        brokenBike =>
-                          brokenBike.bikeNumber === breakdown.bikeNumber
-                      ).length === 0;
+                    const fixed =
+                      new Date(breakdown.time.fixed).getTime() !== 0;
+                    const bull = (
+                      <span className={classes.secondaryHeading}>
+                        {` \u2022 `}
+                      </span>
+                    );
 
                     return bikeByNumber !== undefined ? (
-                      <ExpansionPanel key={index}>
-                        <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-                          <ListItemText
-                            primary={`${bikeByNumber.name} ${bull} ${
-                              breakdown.bikeNumber
-                            } ${bull} ${
-                              bikeIsFixed
-                                ? 'Korjattu ' +
-                                  new Date(breakdown.time.fixed).toLocaleString(
-                                    'fi-FI'
-                                  )
-                                : 'Ei vielä korjattu'
-                            }`}
-                            secondary={new Date(
-                              breakdown.time.broken
-                            ).toLocaleString('fi-FI')}
-                          />
-                        </ExpansionPanelSummary>
-                        <ExpansionPanelDetails>
-                          <div>
-                            <Typography variant="subheading">
-                              {breakdown.reason}
-                            </Typography>
-                            <Typography>
-                              {breakdown.description
-                                ? breakdown.description
-                                : 'Ei lisätietoja'}
-                            </Typography>
-                          </div>
-                        </ExpansionPanelDetails>
+                      <ListItem key={index}>
+                        <ExpansionPanel className={classes.root}>
+                          <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                            <div className={classes.column}>
+                              <Typography className={classes.heading}>
+                                {bikeByNumber.name}
+                                {bull}
+                                {breakdown.bikeNumber}
+                              </Typography>
+                            </div>
+                            <div className={classes.column}>
+                              <Typography className={classes.secondaryHeading}>
+                                {fixed ? (
+                                  <span className={classes.fixed}>
+                                    Korjattu{' '}
+                                  </span>
+                                ) : (
+                                  <span className={classes.unfixed}>
+                                    Ei vielä korjattu
+                                  </span>
+                                )}
 
-                        {bikeIsFixed
-                          ? ''
-                          : [
-                              <Divider key="divider" />,
-                              <ExpansionPanelActions key="actions">
-                                <FixBreakdown
-                                  onFix={() =>
-                                    this.fixBreakdown(breakdown.bikeNumber)
-                                  }
-                                />
-                              </ExpansionPanelActions>,
-                            ]}
-                      </ExpansionPanel>
+                                {fixed
+                                  ? new Date(
+                                      breakdown.time.fixed
+                                    ).toLocaleString('fi-FI')
+                                  : ''}
+                              </Typography>
+                            </div>
+                          </ExpansionPanelSummary>
+                          <ExpansionPanelDetails>
+                            <div>
+                              <Typography variant="caption">
+                                {new Date(breakdown.time.broken).toLocaleString(
+                                  'fi-FI'
+                                )}
+                              </Typography>
+                              <Typography variant="subheading">
+                                {breakdown.reason}
+                              </Typography>
+                              <Typography>
+                                {breakdown.description
+                                  ? breakdown.description
+                                  : 'Ei lisätietoja'}
+                              </Typography>
+                            </div>
+                          </ExpansionPanelDetails>
+
+                          {fixed
+                            ? ''
+                            : [
+                                <Divider key="divider" />,
+                                <ExpansionPanelActions key="actions">
+                                  <FixBreakdown
+                                    onFix={() =>
+                                      this.fixBreakdown(breakdown.bikeNumber)
+                                    }
+                                  />
+                                </ExpansionPanelActions>,
+                              ]}
+                        </ExpansionPanel>
+                      </ListItem>
                     ) : (
                       <ListItem>
                         <ListItemText

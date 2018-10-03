@@ -158,33 +158,33 @@ export const BikeViews = withStyles(styles)(
       render() {
         const { classes } = this.props;
         const index = this.props.bikeViewIndex;
-        const bikesList = [
-          {
-            node: (
-              <Bikes
-                available
-                styles={{
-                  display: this.bikeViewIndex === 0 ? undefined : 'none',
-                }}
-                selectedBike={this.props.selectedBike}
-                handleSelect={this.props.handleSelect}
-              />
-            ),
-            direction: 'right',
-          },
-          {
-            node: (
-              <Bikes
-                styles={{
-                  display: this.bikeViewIndex === 1 ? undefined : 'none',
-                }}
-                selectedBike={this.props.selectedBike}
-                handleSelect={this.props.handleSelect}
-              />
-            ),
-            direction: 'left',
-          },
-        ];
+        //const bikesList = [
+        //  {
+        //    node: (
+        //      <Bikes
+        //        available
+        //        styles={{
+        //          display: this.bikeViewIndex === 0 ? undefined : 'none',
+        //        }}
+        //        selectedBike={this.props.selectedBike}
+        //        handleSelect={this.props.handleSelect}
+        //      />
+        //    ),
+        //    direction: 'right',
+        //  },
+        //  {
+        //    node: (
+        //      <Bikes
+        //        styles={{
+        //          display: this.bikeViewIndex === 1 ? undefined : 'none',
+        //        }}
+        //        selectedBike={this.props.selectedBike}
+        //        handleSelect={this.props.handleSelect}
+        //      />
+        //    ),
+        //    direction: 'left',
+        //  },
+        //];
         //return (
         //  <Fragment>
         //    {bikesList.map((bikes, index) => (

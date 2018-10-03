@@ -13,8 +13,7 @@ import {
 } from '@material-ui/core';
 import { Menu, Security } from '@material-ui/icons';
 
-import SubmitBike from '../SubmitBike';
-import { AdminLogout, Breakdowns } from '.';
+import { AdminLogout, Breakdowns, SubmitBike } from '.';
 import { withContext } from '../DataContext';
 
 const styles = theme => ({

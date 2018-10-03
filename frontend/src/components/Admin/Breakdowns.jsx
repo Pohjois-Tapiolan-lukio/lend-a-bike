@@ -173,13 +173,19 @@ export const Breakdowns = withStyles(styles)(
                       </span>
                     );
 
-                    return bikeByNumber !== undefined ? (
+                    return (
                       <ListItem key={index}>
                         <ExpansionPanel className={classes.root}>
                           <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                             <div className={classes.column}>
                               <Typography className={classes.heading}>
-                                {bikeByNumber.name}
+                                {bikeByNumber ? (
+                                  bikeByNumber.name
+                                ) : (
+                                  <span className={classes.unfixed}>
+                                    Tuntematon pyörä
+                                  </span>
+                                )}
                                 {bull}
                                 {breakdown.bikeNumber}
                               </Typography>
@@ -235,13 +241,6 @@ export const Breakdowns = withStyles(styles)(
                                 </ExpansionPanelActions>,
                               ]}
                         </ExpansionPanel>
-                      </ListItem>
-                    ) : (
-                      <ListItem>
-                        <ListItemText
-                          primary="Tuntematon pyörä"
-                          secondary={breakdown.bikeNumber}
-                        />
                       </ListItem>
                     );
                   })}

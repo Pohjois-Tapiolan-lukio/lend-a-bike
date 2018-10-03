@@ -24,8 +24,8 @@ const Titlebar = props => (
       value={props.bikeViewIndex}
       onChange={(event, value) => props.changeBikeViewIndex(value)}
     >
-      <Tab label="Palautetut pyörät" />
-      <Tab label="Lainatut pyörät" />
+      <Tab label="Lainaa pyörä" />
+      <Tab label="Palauta pyörä" />
     </BikeTabs>
   </TitlebarBase>
 );

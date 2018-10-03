@@ -16,7 +16,8 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
 
-import { withContext } from './DataContext';
+import { withContext } from '../DataContext';
+import { Headsup } from '../layouts';
 
 const styles = theme => ({
   textField: {
@@ -73,7 +74,7 @@ class SubmitBike extends Component {
               bikeNumber: '',
               open: false,
               disableSubmit: false,
-              submitStatus: -1,
+              submitStatus: response.status.toString(),
             });
             this.props.reloadBikes();
           });
@@ -163,6 +164,12 @@ class SubmitBike extends Component {
             </Button>
           </DialogActions>
         </Dialog>
+        {
+          // TODO make app root portal where to render headsups
+        }
+        {this.state.submitStatus === '200' ? (
+          <Headsup startOpen message="Pyörä lisätty" action="" />
+        ) : null}
       </Fragment>
     );
   }

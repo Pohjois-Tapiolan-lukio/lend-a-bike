@@ -16,6 +16,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../DataContext';
 import { PowerSettingsNew, Security } from '@material-ui/icons';
 
+import { Headsup } from '../layouts';
+
 const styles = theme => ({
   Button: {
     margin: 10,
@@ -61,6 +63,7 @@ export const AdminLogin = withStyles(styles)(
         event.preventDefault();
         this.setState({
           disableSubmit: true,
+          submitStatus: -1,
         });
 
         fetch('/api/admins/login', {
@@ -82,7 +85,7 @@ export const AdminLogin = withStyles(styles)(
                   password: '',
                   open: false,
                   disableSubmit: false,
-                  submitStatus: -1,
+                  submitStatus: response.status.toString(),
                 });
               });
             } else {
@@ -102,6 +105,7 @@ export const AdminLogin = withStyles(styles)(
 
       render() {
         const { classes } = this.props;
+
         return (
           <Fragment>
             <Button onClick={this.openDialog} color="inherit">
@@ -167,6 +171,9 @@ export const AdminLogin = withStyles(styles)(
                 </Button>
               </DialogActions>
             </Dialog>
+            {this.state.submitStatus === '200' ? (
+              <Headsup startOpen message="Olet kirjautunut sisään" action="" />
+            ) : null}
           </Fragment>
         );
       }

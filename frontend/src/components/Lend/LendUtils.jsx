@@ -21,6 +21,7 @@ import {
   bikeType,
   lendingType,
 } from '../../utils';
+import { Headsup } from '../layouts';
 
 const styles = theme => ({
   //fab: {
@@ -41,6 +42,7 @@ const styles = theme => ({
   },
 });
 
+// TODO move to layouts
 const FabZoom = withStyles(styles, { withTheme: true })(
   withContext(props => {
     const { index, theme } = props;
@@ -107,6 +109,7 @@ export const LendBike = withStyles(styles)(
           body: JSON.stringify({
             lender: this.state.lender,
             bikeNumber: this.props.selectedBike.bikeNumber,
+            // TODO lending remove bike_id
             bike_id: this.props.selectedBike._id,
           }),
         })
@@ -115,13 +118,12 @@ export const LendBike = withStyles(styles)(
               this.setState({
                 disableSubmit: false,
                 lender: '',
-                submitStatus: -1,
+                submitStatus: response.status.toString(),
                 dialogOpen: false,
               });
               this.props.reloadLendings();
               this.props.clearSelection();
             } else {
-              // If you try to lend a bike that is already in use
               this.setState({
                 disableSubmit: false,
                 dialogOpen: false,
@@ -197,9 +199,6 @@ export const LendBike = withStyles(styles)(
                     <br />
                     {
                       {
-                        // The dialog will actually never show the 200 code
-                        '200': 'Lainaus luotu',
-                        '403': 'Ei oikeutta (403)',
                         '409': 'Pyörä on käytössä (409)',
                       }[this.state.submitStatus]
                     }
@@ -237,6 +236,9 @@ export const LendBike = withStyles(styles)(
                 </Button>
               </DialogActions>
             </Dialog>
+            {this.state.submitStatus === '200' ? (
+              <Headsup startOpen message="Pyörä lainattu" action="" />
+            ) : null}
           </Fragment>
         );
       }
@@ -292,24 +294,22 @@ export const ReturnBike = withStyles(styles)(
                   lender: '',
                   dialogOpen: false,
                   disableSubmit: false,
-                  submitStatus: -1,
+                  submitStatus: response.status.toString(),
                 });
               });
               this.props.reloadLendings();
               this.props.clearSelection();
+            } else if (response.status === 400) {
+              // The bike is not lent
+              this.setState({
+                lender: '',
+                dialogOpen: false,
+                disableSubmit: false,
+                submitStatus: 400,
+              });
+              this.props.reloadLendings();
+              this.props.clearSelection();
             } else {
-              if (response.status === 400) {
-                // The bike is not lent
-                this.setState({
-                  lender: '',
-                  dialogOpen: false,
-                  disableSubmit: false,
-                  submitStatus: -1,
-                });
-                this.props.reloadLendings();
-                this.props.clearSelection();
-                return;
-              }
               this.setState({
                 disableSubmit: false,
                 submitStatus: response.status.toString(),
@@ -369,7 +369,6 @@ export const ReturnBike = withStyles(styles)(
                     <br />
                     {
                       {
-                        '200': 'Pyörä palautettu',
                         '400': 'Huono pyyntö (400)',
                         '401': 'Väärä nimi (401)',
                       }[this.state.submitStatus]
@@ -408,6 +407,9 @@ export const ReturnBike = withStyles(styles)(
                 </Button>
               </DialogActions>
             </Dialog>
+            {this.state.submitStatus === '200' ? (
+              <Headsup startOpen message="Pyörä palautettu" action="" />
+            ) : null}
           </Fragment>
         );
       }

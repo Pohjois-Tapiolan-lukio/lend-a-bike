@@ -39,7 +39,8 @@ export const getLentBikes = (bikes, lendings) => {
 };
 
 export const getAvailableBikes = (bikes, lendings) => {
-  if (!bikes.length || !lendings.length) return [];
+  if (!bikes.length) return [];
+  if (!lendings.length) return bikes;
   const latestLendings = getLatestLendings(bikes, lendings);
 
   return bikes.filter(bike => {

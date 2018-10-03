@@ -22,6 +22,7 @@ import { red, grey as gray } from '@material-ui/core/colors';
 
 import { withContext } from '../DataContext';
 import { bikeType, lendingType, breakdownType } from '../../utils';
+import { Headsup } from '../layouts';
 
 const styles = theme => ({
   cardAction: {
@@ -68,6 +69,7 @@ export const BikeCardButtons = withStyles(styles)(
 );
 
 const DeleteButton = withStyles(styles)(
+  // TODO how to render headsup
   class extends Component {
     constructor(props) {
       super(props);
@@ -211,7 +213,7 @@ const EditButton = withStyles(styles)(
                 bikeNumber: '',
                 dialogOpen: false,
                 disableSubmit: false,
-                submitStatus: -1,
+                submitStatus: response.status.toString(),
               });
               this.props.reloadBikes();
             });
@@ -296,6 +298,9 @@ const EditButton = withStyles(styles)(
               </Button>
             </DialogActions>
           </Dialog>
+          {this.state.submitStatus === '200' ? (
+            <Headsup startOpen message="Pyörä muokattu" action="" />
+          ) : null}
         </Fragment>
       );
     }
@@ -453,7 +458,7 @@ const BreakdownButton = withStyles(styles)(
                 description: '',
                 dialogOpen: false,
                 disableSubmit: false,
-                submitStatus: -1,
+                submitStatus: response.status.toString(),
               });
               this.props.reloadBreakdowns();
             });
@@ -489,6 +494,8 @@ const BreakdownButton = withStyles(styles)(
                     {
                       '200': 'Pyörä muokattu',
                       '403': 'Ei oikeutta (403)',
+                      '400': 'Huono pyyntö (400)',
+                      '409': 'Pyörä on jo rikki (409)',
                     }[this.state.submitStatus]
                   }
                 </DialogContentText>
@@ -541,6 +548,9 @@ const BreakdownButton = withStyles(styles)(
               </Button>
             </DialogActions>
           </Dialog>
+          {this.state.submitStatus === '201' ? (
+            <Headsup startOpen message="Hajoaminen lisätty" action="" />
+          ) : null}
         </Fragment>
       );
     }

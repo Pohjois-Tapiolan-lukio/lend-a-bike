@@ -4,6 +4,10 @@ export const bikeType = PropTypes.shape({
   _id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   bikeNumber: PropTypes.number.isRequired,
+  image: PropTypes.shape({
+    file: PropTypes.object,
+    uploaded: PropTypes.string,
+  }),
 });
 
 export const lendingType = PropTypes.shape({

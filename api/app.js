@@ -13,6 +13,7 @@ const routeBreakdowns = require('./routes/breakdowns');
 const app = express();
 const PREFIX = process.env.API_ROUTE_PREFIX;
 
+// TODO change admin, get password from env, database name
 mongoose.connect('mongodb://memoadmin:salasana@database/posts');
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));

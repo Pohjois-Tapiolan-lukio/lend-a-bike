@@ -3,12 +3,15 @@ const mongoose = require('mongoose');
 
 const Bike = require('../models/bike');
 const auth = require('../auth');
+const imageRouter = require('./bikeImage');
 
 const router = express.Router();
 
+router.use('/images', imageRouter);
+
 router.get('/', (req, res, _) => {
   Bike.find()
-    .select('_id name bikeNumber usage')
+    .select('_id name bikeNumber image')
     .then(bikes => {
       res.status(200).json(bikes);
     })
@@ -23,7 +26,7 @@ router.get('/:bikeNumber', (req, res, _) => {
   Bike.findOne({
     _id: req.params.bikeNumber,
   })
-    .select('_id name bikeNumber usage')
+    .select('_id name bikeNumber image')
     .then(bike => {
       res.status(200).json(bike);
     })
@@ -73,6 +76,7 @@ router.post('/', auth, (req, res, _) => {
 
 router.patch('/:bikeNumber', auth, (req, res, _) => {
   Bike.findOne({
+    // TODO why is there _id
     _id: req.params.bikeNumber,
   })
     .then(bike => {
@@ -95,6 +99,7 @@ router.patch('/:bikeNumber', auth, (req, res, _) => {
 
 router.delete('/:bikeNumber', auth, (req, res, _) => {
   Bike.findOne({
+    // TODO why is there _id
     _id: req.params.bikeNumber,
   })
     .remove()

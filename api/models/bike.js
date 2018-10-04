@@ -10,7 +10,17 @@ const bikeSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  image: {
+    file: mongoose.Schema.Types.Mixed,
+    uploaded: { type: Date },
+  },
 });
+
+// bikeSchema.pre('save', function preSave(next) {
+//   this.image.uploaded = new Date();
+//   console.log(this.imape.uploaded);
+//   next();
+// });
 
 module.exports = mongoose.model('Bike', bikeSchema);
 

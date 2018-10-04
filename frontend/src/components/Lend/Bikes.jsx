@@ -49,6 +49,15 @@ const styles = theme => ({
   slide: {
     transition: 'transform 500ms linear 0ms',
   },
+  image: {
+    right: 0,
+    top: 0,
+    bottom: 0,
+    position: 'absolute',
+    margin: 'auto 8px',
+    maxWidth: '90%',
+    maxHeight: '90%',
+  },
 });
 
 const BikeContent = props => (
@@ -105,7 +114,17 @@ export const Bikes = withStyles(styles, { withTheme: true })(
                     className={classes.cardButton}
                     onClick={this.props.handleSelect(bike)}
                   >
-                    <BikeContent bike={bike} available={this.props.available} />
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <BikeContent
+                          bike={bike}
+                          available={this.props.available}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <BikeImage bike={bike} />
+                      </Grid>
+                    </Grid>
                   </ButtonBase>
                   {this.props.adminToken ? (
                     <Fragment>
@@ -225,6 +244,27 @@ export const BikeViews = withStyles(styles)(
       }
     }
   )
+);
+
+const BikeImage = withStyles(styles)(
+  class extends Component {
+    constructor(props) {
+      super(props);
+      this.style = {};
+    }
+    static propTypes = {
+      classes: PropTypes.object.isRequired,
+      bike: bikeType.isRequired,
+    };
+
+    render() {
+      const { classes, bike } = this.props;
+
+      return bike.image ? (
+        <img src={`/${bike.image.file.filename}`} className={classes.image} />
+      ) : null;
+    }
+  }
 );
 
 // vim: et ts=2 sw=2 :

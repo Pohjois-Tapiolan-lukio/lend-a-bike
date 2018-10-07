@@ -21,7 +21,7 @@ import { Delete, Edit, ViewList, BrokenImage } from '@material-ui/icons';
 import { red, grey as gray } from '@material-ui/core/colors';
 
 import { withContext } from '../DataContext';
-import { bikeType, lendingType, breakdownType } from '../../utils';
+import { bikeType, lendingType } from '../../utils';
 import { Headsup } from '../layouts';
 
 const styles = theme => ({
@@ -168,11 +168,7 @@ const EditButton = withStyles(styles)(
     }
     static propTypes = {
       classes: PropTypes.object.isRequired,
-      bike: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        bikeNumber: PropTypes.number.isRequired,
-      }).isRequired,
+      bike: bikeType.isRequired,
       adminToken: PropTypes.string.isRequired,
     };
     closeDialog = () => this.setState({ dialogOpen: false });
@@ -317,31 +313,10 @@ const ListButton = withStyles(styles)(
     }
     static propTypes = {
       classes: PropTypes.object.isRequired,
-      bike: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        bikeNumber: PropTypes.number.isRequired,
-      }).isRequired,
+      bike: bikeType.isRequired,
       adminToken: PropTypes.string.isRequired,
-      bikes: PropTypes.arrayOf(
-        PropTypes.shape({
-          _id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
-          bikeNumber: PropTypes.number.isRequired,
-        })
-      ),
-      lendings: PropTypes.arrayOf(
-        PropTypes.shape({
-          _id: PropTypes.string.isRequired,
-          lender: PropTypes.string.isRequired,
-          bike_id: PropTypes.string.isRequired,
-          bikeNumber: PropTypes.number.isRequired,
-          time: PropTypes.shape({
-            lent: PropTypes.string.isRequired,
-            returned: PropTypes.string.isRequired,
-          }),
-        })
-      ),
+      bikes: PropTypes.arrayOf(bikeType),
+      lendings: PropTypes.arrayOf(lendingType).isRequired,
     };
     static defaultProps = {};
     closeDialog = () => this.setState({ dialogOpen: false });

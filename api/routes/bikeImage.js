@@ -1,9 +1,13 @@
 const express = require('express');
 const multer = require('multer');
 const mongoose = require('mongoose');
+const fs = require('fs');
+const { promisify } = require('util');
 
 const Bike = require('../models/bike');
 const auth = require('../auth');
+
+const unlink = promisify(fs.unlink);
 
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -20,13 +24,17 @@ const upload = multer({
     fileSize: 1024 * 1024 * 20,
   },
   fileFilter: (req, file, cb) => {
-    cb(null, file.mimetype === 'image/jpeg' || file.mimetype === 'image/png');
+    const match =
+      file.mimetype === 'image/jpeg' || file.mimetype === 'image/png';
+    if (match) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only jpeg and png files are allowed'), false);
+    }
   },
 });
 
 router.post('/', upload.single('image'), (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
   if (!req.file) {
     return res.status(400).json({ error: 'File is missing!' });
   }
@@ -50,7 +58,16 @@ router.post('/', upload.single('image'), (req, res) => {
 });
 
 router.delete('/:bikeNumber', auth, (req, res) => {
-  Bike.update({ bikeNumber: req.params.bikeNumber }, { $unset: { image: '' } })
+  Bike.findOne({ bikeNumber: req.params.bikeNumber })
+    .then(bike => {
+      if (bike.image && bike.image.file) {
+        console.log(`Removing ${bike.image.file.path}`);
+        unlink(bike.image.file.path);
+      }
+      delete bike.image;
+      // Bike.update({ bikeNumber: req.params.bikeNumber }, { $unset: { image: '' } })
+      bike.save();
+    })
     .then(result => res.status(200).json(result))
     .catch(error => res.status(500).json({ error }));
 });

@@ -10,13 +10,16 @@ import {
   CardActions,
   ButtonBase,
 } from '@material-ui/core';
+import { red } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
+import { Build } from '@material-ui/icons';
 
 import { BikeCardButtons } from '../Admin';
 import { withContext } from '../DataContext';
 import {
   getLentBikes,
   getAvailableBikes,
+  getBrokenBikes,
   bikeType,
   lendingType,
 } from '../../utils';
@@ -56,17 +59,33 @@ const styles = theme => ({
     position: 'absolute',
     margin: 'auto 8px',
     maxWidth: '90%',
-    maxHeight: '90%',
+    maxHeight: 100,
   },
 });
 
 const BikeContent = props => (
   <CardContent>
     <Typography variant="headline" component="h2">
-      {props.bike.name}
+      {props.broken ? (
+        <span style={{ color: red[700], whiteSpace: 'nowrap' }}>
+          {props.bike.name}{' '}
+          <Build
+            style={{
+              verticalAlign: 'bottom',
+              fontSize: '18px !important',
+            }}
+          />
+        </span>
+      ) : (
+        props.bike.name
+      )}
     </Typography>
     <Typography color="textPrimary">
-      {props.available ? 'Pyörä on vapaana' : 'Pyörä on varattu'}
+      {props.broken
+        ? 'Pyörä on huollossa'
+        : props.available
+          ? 'Pyörä on vapaana'
+          : 'Pyörä on varattu'}
     </Typography>
     <Typography color="textSecondary">
       {`Pyörän numero: ${props.bike.bikeNumber}`}
@@ -93,6 +112,10 @@ export const Bikes = withStyles(styles, { withTheme: true })(
         const bikes = this.props.available
           ? getAvailableBikes(this.props.bikes, this.props.lendings)
           : getLentBikes(this.props.bikes, this.props.lendings);
+        const brokenBikes = getBrokenBikes(
+          this.props.bikes,
+          this.props.breakdowns
+        );
 
         return (
           <Grid
@@ -100,44 +123,53 @@ export const Bikes = withStyles(styles, { withTheme: true })(
             className={classes.cardgrid}
             spacing={2 * theme.spacing.unit}
           >
-            {bikes.map(bike => (
-              <Grid item xs={12} sm={6} key={bike._id}>
-                <Card
-                  className={classNames(classes.card, {
-                    [classes.selected]: selectedBike
-                      ? selectedBike._id === bike._id
-                      : false,
-                  })}
-                  raised={selectedBike ? selectedBike._id === bike._id : false}
-                >
-                  <ButtonBase
-                    className={classes.cardButton}
-                    onClick={this.props.handleSelect(bike)}
+            {bikes.map(bike => {
+              const broken = brokenBikes.some(
+                brokenBike => brokenBike.bikeNumber === bike.bikeNumber
+              );
+              return (
+                <Grid item xs={12} sm={6} key={bike._id}>
+                  <Card
+                    className={classNames(classes.card, {
+                      [classes.selected]: selectedBike
+                        ? selectedBike._id === bike._id
+                        : false,
+                    })}
+                    raised={
+                      selectedBike ? selectedBike._id === bike._id : false
+                    }
                   >
-                    <Grid container>
-                      <Grid item xs={6}>
-                        <BikeContent
-                          bike={bike}
-                          available={this.props.available}
-                        />
+                    <ButtonBase
+                      className={classes.cardButton}
+                      onClick={this.props.handleSelect(bike)}
+                      disabled={broken}
+                    >
+                      <Grid container>
+                        <Grid item xs={6}>
+                          <BikeContent
+                            bike={bike}
+                            broken={broken}
+                            available={this.props.available}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <BikeImage bike={bike} />
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6}>
-                        <BikeImage bike={bike} />
-                      </Grid>
-                    </Grid>
-                  </ButtonBase>
-                  {this.props.adminToken ? (
-                    <Fragment>
-                      <CardActions>
-                        <BikeCardButtons bike={bike} />
-                      </CardActions>
-                    </Fragment>
-                  ) : (
-                    ''
-                  )}
-                </Card>
-              </Grid>
-            ))}
+                    </ButtonBase>
+                    {this.props.adminToken ? (
+                      <Fragment>
+                        <CardActions>
+                          <BikeCardButtons bike={bike} />
+                        </CardActions>
+                      </Fragment>
+                    ) : (
+                      ''
+                    )}
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
         );
       }
@@ -145,61 +177,57 @@ export const Bikes = withStyles(styles, { withTheme: true })(
   )
 );
 
-export const BikeViews = withStyles(styles)(
-  withContext(
-    class extends Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          height: 0,
-        };
-      }
-      static propTypes = {
-        classes: PropTypes.object.isRequired,
-        bikeViewIndex: PropTypes.number.isRequired,
-        changeBikeViewIndex: PropTypes.func.isRequired,
-        selectedBike: bikeType,
-        handleSelect: PropTypes.func.isRequired,
+export const BikeViews = withContext(
+  class extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        height: 0,
       };
-      componentDidMount() {
-        this.updateDimensions();
-        window.addEventListener('resize', this.updateDimensions.bind(this));
-      }
-      componentWillUnmount() {
-        window.removeEventListener('resize', this.updateDimensions.bind(this));
-      }
-      updateDimensions() {
-        const height = document.body.clientHeight;
-        this.setState({ height });
-      }
-
-      render() {
-        const { classes } = this.props;
-        const index = this.props.bikeViewIndex;
-        return (
-          <SwipeableViews
-            axis="x"
-            disableLazyLoading
-            index={this.props.bikeViewIndex}
-            onChangeIndex={this.props.changeBikeViewIndex}
-            slideStyle={{
-              height: this.state.height,
-            }}
-          >
-            <Bikes
-              available
-              selectedBike={this.props.selectedBike}
-              handleSelect={this.props.handleSelect}
-            />
-            <Bikes
-              selectedBike={this.props.selectedBike}
-              handleSelect={this.props.handleSelect}
-            />
-          </SwipeableViews>
-        );
-      }
     }
-  )
+    static propTypes = {
+      classes: PropTypes.object.isRequired,
+      bikeViewIndex: PropTypes.number.isRequired,
+      changeBikeViewIndex: PropTypes.func.isRequired,
+      selectedBike: bikeType,
+      handleSelect: PropTypes.func.isRequired,
+    };
+    componentDidMount() {
+      this.updateDimensions();
+      window.addEventListener('resize', this.updateDimensions.bind(this));
+    }
+    componentWillUnmount() {
+      window.removeEventListener('resize', this.updateDimensions.bind(this));
+    }
+    updateDimensions() {
+      const height = document.body.clientHeight;
+      this.setState({ height });
+    }
+
+    render() {
+      return (
+        <SwipeableViews
+          axis="x"
+          disableLazyLoading
+          index={this.props.bikeViewIndex}
+          onChangeIndex={this.props.changeBikeViewIndex}
+          slideStyle={{
+            height: this.state.height,
+          }}
+        >
+          <Bikes
+            available
+            selectedBike={this.props.selectedBike}
+            handleSelect={this.props.handleSelect}
+          />
+          <Bikes
+            selectedBike={this.props.selectedBike}
+            handleSelect={this.props.handleSelect}
+          />
+        </SwipeableViews>
+      );
+    }
+  }
 );
 
 const BikeImage = withStyles(styles)(
@@ -217,7 +245,11 @@ const BikeImage = withStyles(styles)(
       const { classes, bike } = this.props;
 
       return bike.image && bike.image.file ? (
-        <img src={`/${bike.image.file.filename}`} className={classes.image} />
+        <img
+          src={`/${bike.image.file.filename}`}
+          className={classes.image}
+          alt=""
+        />
       ) : null;
     }
   }

@@ -13,8 +13,9 @@ const routeBreakdowns = require('./routes/breakdowns');
 const app = express();
 const PREFIX = process.env.API_ROUTE_PREFIX;
 
-// TODO change admin, get password from env, database name
-mongoose.connect('mongodb://memoadmin:salasana@database/posts');
+mongoose.connect(
+  `mongodb://admin:${process.env.MONGO_ADMIN_PASSWORD}@database/lendabike`
+);
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,7 +35,7 @@ ${req.method} ${req.url} ${PREFIX}`);
   next(error);
 });
 
-// Catch
+// Catch (_ is needed)
 app.use((err, req, res, _) => {
   res.status(err.status || 500);
   res.json({

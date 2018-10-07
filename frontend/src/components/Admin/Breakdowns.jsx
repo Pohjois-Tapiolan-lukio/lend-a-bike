@@ -2,13 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
-  TextField,
-  Grid,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   List,
   ListItem,
   ListItemIcon,
@@ -23,8 +17,6 @@ import {
   ExpansionPanelSummary,
   ExpansionPanelDetails,
   ExpansionPanelActions,
-  Card,
-  CardContent,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../DataContext';
@@ -32,10 +24,10 @@ import { Build, Close, ExpandMore, Add } from '@material-ui/icons';
 import { red, green, grey as gray } from '@material-ui/core/colors';
 
 import {
-  lendingType,
+  // lendingType,
   bikeType,
   breakdownType,
-  getBrokenBikes,
+  // getBrokenBikes,
 } from '../../utils';
 
 const styles = theme => ({
@@ -245,7 +237,9 @@ export const Breakdowns = withStyles(styles)(
                     );
                   })}
               </List>
-              <AddBrokenBike />
+              {
+                // <AddBrokenBike />
+              }
             </Dialog>
           </Fragment>
         );
@@ -263,6 +257,8 @@ const FixBreakdown = withStyles(styles)(props => (
 ));
 
 // TODO add dialog layout
+// TODO make this do something
+// eslint-disable-next-line
 const AddBrokenBike = withStyles(styles)(
   class extends Component {
     constructor(props) {

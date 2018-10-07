@@ -19,13 +19,13 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { withContext } from '../DataContext';
 
-import { FilePond, File, registerPlugin } from 'react-filepond';
+import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import FilePondImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
+// import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
 registerPlugin(FilePondImagePreview);
-registerPlugin(FilePondPluginFileEncode);
+// registerPlugin(FilePondPluginFileEncode);
 
 const styles = theme => ({
   textField: {
@@ -33,6 +33,7 @@ const styles = theme => ({
   },
 });
 
+// TODO Make this a method
 const handler = (state, props) => (
   fieldName,
   file,
@@ -63,9 +64,7 @@ const handler = (state, props) => (
     .catch(console.log);
 
   return {
-    abort: () => {
-      abort();
-    },
+    abort,
   };
 };
 
@@ -158,6 +157,29 @@ const ImageSubmit = withStyles(styles)(
             </Dialog>
           </Fragment>
         );
+      }
+    }
+  )
+);
+
+// eslint-disable-next-line
+const ImageRemove = withStyles(styles)(
+  withContext(
+    class extends Component {
+      removeImage = bikeNumber => {
+        fetch(`/api/bikes/images/${bikeNumber}`, {
+          method: 'DELETE',
+        })
+          .then(response => {
+            if (response.ok) {
+              this.props.reloadBikes();
+              this.props.reloadLendings();
+            }
+          })
+          .catch(console.log);
+      };
+      render() {
+        return <div />;
       }
     }
   )

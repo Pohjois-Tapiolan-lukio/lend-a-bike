@@ -19,7 +19,7 @@ Change the primary group of your user
 > to add the group
 
 Initialize and update the submodule
-[https://github.com/vishnubob/wait-for-it](wait-for)
+[https://github.com/eficode/wait-for](wait-for)
 
 - `git submodule init`
 - `git submodule update`

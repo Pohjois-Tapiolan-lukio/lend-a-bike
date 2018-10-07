@@ -24,14 +24,28 @@ const upload = multer({
   },
 });
 
-router.post('/', auth, upload.single('image'), (req, res) => {
-  // Cheaky cast from string to a number
-  Bike.findOne({ bikeNumber: +req.body.bikeNumber })
+router.post('/', upload.single('image'), (req, res) => {
+  console.log(req.body);
+  console.log(req.file);
+  if (!req.file) {
+    return res.status(400).json({ error: 'File is missing!' });
+  }
+  Bike.findOne({
+    bikeNumber: req.body.bikeNumber ? +req.body.bikeNumber : null,
+  })
     .update({
       'image.file': req.file,
       'image.uploaded': new Date(),
     })
-    .then(result => res.status(200).json(result))
+    .then(result => {
+      if (result.n === 0) {
+        res
+          .status(400)
+          .json({ error: { message: 'No bike has the given bikeNumber' } });
+      } else {
+        res.status(200).json(result);
+      }
+    })
     .catch(error => res.status(500).json(error));
 });
 

@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import { Menu, Security } from '@material-ui/icons';
 
-import { AdminLogout, Breakdowns, SubmitBike } from '.';
+import { AdminLogout, Breakdowns, SubmitBike, ImageSubmit } from '.';
 import { withContext } from '../DataContext';
 
 const styles = theme => ({
@@ -94,6 +94,8 @@ const AdminDrawer = withStyles(styles)(
                   />
                   <Divider />
                   <Breakdowns />
+                  <Divider />
+                  <ImageSubmit />
 
                   <div className={classes.spacer} />
                   <Divider />

@@ -170,56 +170,12 @@ export const BikeViews = withStyles(styles)(
       }
       updateDimensions() {
         const height = document.body.clientHeight;
-        // console.log(height);
         this.setState({ height });
       }
 
       render() {
         const { classes } = this.props;
         const index = this.props.bikeViewIndex;
-        //const bikesList = [
-        //  {
-        //    node: (
-        //      <Bikes
-        //        available
-        //        styles={{
-        //          display: this.bikeViewIndex === 0 ? undefined : 'none',
-        //        }}
-        //        selectedBike={this.props.selectedBike}
-        //        handleSelect={this.props.handleSelect}
-        //      />
-        //    ),
-        //    direction: 'right',
-        //  },
-        //  {
-        //    node: (
-        //      <Bikes
-        //        styles={{
-        //          display: this.bikeViewIndex === 1 ? undefined : 'none',
-        //        }}
-        //        selectedBike={this.props.selectedBike}
-        //        handleSelect={this.props.handleSelect}
-        //      />
-        //    ),
-        //    direction: 'left',
-        //  },
-        //];
-        //return (
-        //  <Fragment>
-        //    {bikesList.map((bikes, index) => (
-        //      <Slide
-        //        className={classes.slide}
-        //        key={index}
-        //        direction={bikes.direction}
-        //        in={this.props.bikeViewIndex === index}
-        //        mountOnEnter
-        //        unmountOnExit
-        //      >
-        //        {bikes.node}
-        //      </Slide>
-        //    ))}
-        //  </Fragment>
-        //);
         return (
           <SwipeableViews
             axis="x"
@@ -260,7 +216,7 @@ const BikeImage = withStyles(styles)(
     render() {
       const { classes, bike } = this.props;
 
-      return bike.image ? (
+      return bike.image && bike.image.file ? (
         <img src={`/${bike.image.file.filename}`} className={classes.image} />
       ) : null;
     }

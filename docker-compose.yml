@@ -61,7 +61,8 @@ services:
 #           test: "exit 0"
 
     mongoexpress:
-        image: mongo-express
+#       image: mongo-express
+        build: mongo-express
         links:
             - database
         environment:
@@ -73,7 +74,8 @@ services:
             - ./wait-for/wait-for:/usr/bin/wait-for
               # Very rude hack :O
             - ./nc:/usr/bin/nc
-        command: sh -c 'wait-for database:27017 -- /node_modules/.bin/mongo-express'
+        command: /bin/sh -c 'wait-for database:27017 -- node /app/node_modules/.bin/cross-env NODE_ENV=production node app'
+#       command: cat /docker-entrypoint.sh
 #       depends_on:
 #           database:
 #               condition: service_healthy

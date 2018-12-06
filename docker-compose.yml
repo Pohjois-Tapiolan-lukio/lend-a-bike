@@ -42,13 +42,14 @@ services:
             - 80:80
 
     database:
-#       image: mongo:latest
-        build: mongo
+        image: niklashh/mongo:latest
+#       build: mongo
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
             - MONGO_USERNAME=admin
             - MONGO_PASSWORD=${MONGO_ADMIN_PASSWORD}
+            - MONGO_DATABASE=lendabike
             - MONGO_DATA_DIR=/data/db
         volumes:
             - ./data/db/:/data/db/
@@ -61,8 +62,8 @@ services:
 #           test: "exit 0"
 
     mongoexpress:
-#       image: mongo-express
-        build: mongo-express
+        image: mongo-express
+#       build: mongo-express
         links:
             - database
         environment:
@@ -73,8 +74,8 @@ services:
         volumes:
             - ./wait-for/wait-for:/usr/bin/wait-for
               # Very rude hack :O
-            - ./nc:/usr/bin/nc
-        command: /bin/sh -c 'wait-for database:27017 -- node /app/node_modules/.bin/cross-env NODE_ENV=production node app'
+#           - ./nc:/usr/bin/nc
+#       command: /bin/sh -c 'wait-for database:27017 -- node /app/node_modules/.bin/cross-env NODE_ENV=production node app'
 #       command: cat /docker-entrypoint.sh
 #       depends_on:
 #           database:
